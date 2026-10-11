@@ -1554,12 +1554,13 @@ html[data-mode="dark"] .chatflow-theme-card {
    陪伴水母 Canvas 与控制项样式
    ========================================== */
 #jellyfishCanvas {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
+  width: 100vw;
+  height: 100vh;
   pointer-events: none;
-  z-index: 10;
+  z-index: 100; /* 位于背景之上，卡片与内容之下 */
 }
 
 .chatflow-setting-row {

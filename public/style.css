@@ -1548,3 +1548,89 @@ html[data-mode="dark"] .chatflow-theme-card {
 .detail-prompt-code-wrap {
   background: var(--bg-surface-elevated) !important;
 }
+
+
+/* ==========================================
+   陪伴水母 Canvas 与控制项样式
+   ========================================== */
+#jellyfishCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 100; /* 位于背景之上，卡片与内容之下 */
+}
+
+.chatflow-setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 14px;
+}
+
+.chatflow-setting-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chatflow-setting-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chatflow-setting-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.chatflow-stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3px 6px;
+}
+
+.chatflow-stepper-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: var(--surface);
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.chatflow-stepper-btn:hover {
+  background: var(--text-primary);
+  color: var(--bg-main);
+  transform: scale(1.08);
+}
+
+.chatflow-stepper-value {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 32px;
+  text-align: center;
+}

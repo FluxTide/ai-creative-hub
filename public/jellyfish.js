@@ -324,12 +324,31 @@
       this.x += this.vx;
       this.y += this.vy;
 
-      // 5. 网页绝对坐标边界环绕（整个长画卷）
-      const pad = this.radius * 2;
-      if (this.x < -pad) this.x = pageW + pad;
-      if (this.x > pageW + pad) this.x = -pad;
-      if (this.y < -pad) this.y = pageH + pad;
-      if (this.y > pageH + pad) this.y = -pad;
+      // 5. 网页绝对坐标柔性边界弹回（四向软边界，到底到底儿了调头回游，不再瞬间穿越）
+      const pad = this.radius * 2.2;
+      // 左右边界：接近边缘提前平滑调头转向
+      if (this.x < pad) {
+        this.x = pad;
+        this.vx = Math.abs(this.vx) * 0.7 + 0.2;
+        this.angle = Math.atan2(this.vy, this.vx);
+      } else if (this.x > pageW - pad) {
+        this.x = pageW - pad;
+        this.vx = -Math.abs(this.vx) * 0.7 - 0.2;
+        this.angle = Math.atan2(this.vy, this.vx);
+      }
+
+      // 顶部边界：触顶调头向下游
+      if (this.y < pad) {
+        this.y = pad;
+        this.vy = Math.abs(this.vy) * 0.7 + 0.25;
+        this.angle = Math.atan2(this.vy, this.vx);
+      } 
+      // 底部边界：触底到底儿了，调头向上回游，绝不再传送回顶部
+      else if (this.y > pageH - pad) {
+        this.y = pageH - pad;
+        this.vy = -Math.abs(this.vy) * 0.7 - 0.35;
+        this.angle = Math.atan2(this.vy, this.vx);
+      }
 
       // 6. 更新骨骼：触手与口腕
       this.updateSkeleton(pulseCycle);

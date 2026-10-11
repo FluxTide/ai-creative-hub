@@ -290,28 +290,33 @@
 
         // 柔性触手物理摆动（摆线物理模拟，自然柔美）
         const segDist = (r * 0.32);
+        // 核心动力学：触角必须严格顺着水母身体的朝向自然拖曳向后方！
+        // 当水母倒着游（头向下）时，后方就是上方；当头向上时，后方就是下方
+        const tailDirX = -Math.cos(this.angle);
+        const tailDirY = -Math.sin(this.angle);
+
         for (let j = 1; j < tentacle.length; j++) {
           const seg = tentacle[j];
           const prev = tentacle[j - 1];
 
-          // 弹性阻尼向后拉动
+          // 1. 身体朝向对齐力：引导触角顺应头部下方（尾向）舒展，绝不折向重力方向！
+          const naturalTargetX = prev.x + tailDirX * segDist;
+          const naturalTargetY = prev.y + tailDirY * segDist;
+          seg.x += (naturalTargetX - seg.x) * 0.18;
+          seg.y += (naturalTargetY - seg.y) * 0.18;
+
+          // 2. 经典绳索间距约束 (Verlet distance constraint)
           const dx = seg.x - prev.x;
           const dy = seg.y - prev.y;
           const curDist = Math.sqrt(dx * dx + dy * dy) || 1;
           const stretch = (curDist - segDist) / curDist;
+          seg.x -= dx * stretch * 0.5;
+          seg.y -= dy * stretch * 0.5;
 
-          // 柔韧回弹
-          seg.x -= dx * stretch * 0.45;
-          seg.y -= dy * stretch * 0.45;
-
-          // 随游动方向的流体阻力与波浪摆动
-          const wave = Math.sin(this.pulsePhase * 1.5 + j * 0.4 + tIdx) * (0.4 + j * 0.15);
-          seg.x += Math.cos(perpAngle) * wave - (this.vx * 0.55);
-          seg.y += Math.sin(perpAngle) * wave - (this.vy * 0.55) + 0.12; // 柔和下垂感
-
-          // 保持跟随父节
-          seg.x += (prev.x - seg.x) * 0.22;
-          seg.y += (prev.y - seg.y) * 0.22;
+          // 3. 流体反向拖尾与横向 S 型水流波动（垂直于身体轴）
+          const wave = Math.sin(this.pulsePhase * 1.5 + j * 0.45 + tIdx) * (0.35 + j * 0.12);
+          seg.x += Math.cos(perpAngle) * wave - (this.vx * 0.4);
+          seg.y += Math.sin(perpAngle) * wave - (this.vy * 0.4);
         }
       });
     }

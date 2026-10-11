@@ -43,10 +43,31 @@
     const pressDuration = performance.now() - mouse.downStartTime;
     mouse.isDown = false;
 
-    // 如果是轻触/单次点击（不是长按转圈），在点击位置投喂 1~2 颗水母小鱼粮/浮游食物！
+    // 如果是轻触/单次点击（不是长按）
     if (pressDuration < 280) {
-      spawnFood(e.clientX, e.clientY);
-      spawnBubbles(e.clientX, e.clientY, 4);
+      // 先检测是否点击中了某只水母（触发惊吓：跑掉，但不会跑太远）
+      let hitJelly = false;
+      for (let i = 0; i < jellyfishes.length; i++) {
+        const j = jellyfishes[i];
+        const dist = Math.hypot(e.clientX - j.x, e.clientY - j.y);
+        if (dist < j.radius * 1.6) {
+          // 准确点中了小水母！水母受到轻微惊吓逃跑
+          hitJelly = true;
+          const scareAngle = Math.atan2(j.y - e.clientY, j.x - e.clientX);
+          j.scaredAngle = scareAngle + (Math.random() - 0.5) * 0.25;
+          j.scaredTimer = 40; // 持续约 0.6 秒的适度推水逃离，不会飞出视野
+          j.vx += Math.cos(j.scaredAngle) * 2.0;
+          j.vy += Math.sin(j.scaredAngle) * 2.0;
+          spawnBubbles(j.x, j.y, 4);
+          break;
+        }
+      }
+
+      // 如果没有点中小水母，且不在按钮或卡片上，则在点击位置投下 1 颗水母浮游食物
+      if (!hitJelly && !e.target.closest('.modal-overlay, button, input, a, .work-card')) {
+        spawnFood(e.clientX, e.clientY);
+        spawnBubbles(e.clientX, e.clientY, 3);
+      }
     }
   });
 
@@ -109,9 +130,9 @@
     }
 
     reset(initial = false) {
-      this.baseRadius = 18 + Math.random() * 14; // 基础半径
+      this.baseRadius = 14 + Math.random() * 4; // 最小巧可爱的体积 (14~18px)
       this.growth = 0; // 进食生长增量
-      this.maxGrowth = 22; // 最大长大上限
+      this.maxGrowth = 16; // 最大长大上限
 
       this.x = Math.random() * width;
       this.y = initial ? Math.random() * height : height + 50;
@@ -159,34 +180,44 @@
     }
 
     update() {
-      // 1. 脉动心跳推进
+      // 1. 真实水母收缩推水推进力（动作往外推出去的那种感觉：有力向外冲刺，然后慢速惯性滑行舒张）
       this.pulsePhase += this.pulseSpeed;
       const pulseCycle = (Math.sin(this.pulsePhase) + 1) / 2; // 0~1
 
-      // 当收缩喷射时，赋予温和的前进推力
-      if (pulseCycle > 0.85 && !this.isContracting) {
+      // 当收缩瞬间喷射时，赋予动作往外推出去的前进推力
+      if (pulseCycle > 0.82 && !this.isContracting) {
         this.isContracting = true;
-        const thrust = 0.8 + Math.random() * 0.4;
-        this.vx += Math.cos(this.angle) * thrust;
-        this.vy += Math.sin(this.angle) * thrust;
+        const pushThrust = 1.35 + Math.random() * 0.45; // 动作往外推出去的爆发推力
+        this.vx += Math.cos(this.angle) * pushThrust;
+        this.vy += Math.sin(this.angle) * pushThrust;
 
-        if (Math.random() < 0.2) {
-          spawnBubbles(this.x, this.y, 1);
+        if (Math.random() < 0.35) {
+          spawnBubbles(this.x, this.y, 2);
         }
-      } else if (pulseCycle <= 0.85) {
+      } else if (pulseCycle <= 0.82) {
         this.isContracting = false;
       }
 
-      // 阻力（流体阻尼）与自然浮力
-      this.vx *= 0.94;
-      this.vy *= 0.94;
+      // 自然流体滑行阻尼（维持推出去之后的平滑滑行）
+      this.vx *= 0.93;
+      this.vy *= 0.93;
       this.vy -= 0.01;
 
-      // 2. 目标导向行为逻辑（优先级：吃食物 > 绕长按鼠标转圈 > 避障/巡航）
+      // 2. 目标导向行为逻辑（优先级：被点击惊吓 > 吃食物 > 慢速伴游 > 自由推水巡航）
       let hasTarget = false;
 
-      // 检查是否有附近的食物（寻食行为）
-      if (foods.length > 0) {
+      // A. 检查受惊吓逃跑状态（点击水母后触发：跑掉，但不会跑太远）
+      if (this.scaredTimer && this.scaredTimer > 0) {
+        this.scaredTimer--;
+        hasTarget = true;
+        this.targetAngle = this.scaredAngle;
+        // 温和爆发推力离开，随后快速恢复平静
+        this.vx += Math.cos(this.scaredAngle) * 0.45;
+        this.vy += Math.sin(this.scaredAngle) * 0.45;
+      }
+
+      // B. 检查是否有附近的食物（寻食行为）
+      if (!hasTarget && foods.length > 0) {
         let nearestFood = null;
         let minDist = 450;
 
@@ -219,37 +250,30 @@
         }
       }
 
-      // 检查鼠标长按：慢慢游过来并绕着鼠标转圈！
+      // C. 检查鼠标长按：水母慢慢推过来，并在光标附近自然徘徊（告别死板转圈）
       if (!hasTarget && mouse.isDown) {
         const mdx = mouse.x - this.x;
         const mdy = mouse.y - this.y;
         const mDist = Math.sqrt(mdx * mdx + mdy * mdy);
 
         hasTarget = true;
-        const targetRadius = 60 + (this.pulsePhase % 30); // 环绕半径
-
-        if (mDist > targetRadius + 20) {
-          // 较远时：慢慢游向鼠标周围
+        if (mDist > 85) {
+          // 慢慢游向鼠标方向（推出去的那种动作）
           const seekAngle = Math.atan2(mouse.y - this.y, mouse.x - this.x);
           this.targetAngle = seekAngle;
-          this.vx += Math.cos(seekAngle) * 0.22;
-          this.vy += Math.sin(seekAngle) * 0.22;
+          this.vx += Math.cos(seekAngle) * 0.2;
+          this.vy += Math.sin(seekAngle) * 0.2;
         } else {
-          // 靠近后：绕着鼠标长按位置优雅转圈！
-          this.orbitAngle += 0.035;
-          const orbitTargetX = mouse.x + Math.cos(this.orbitAngle) * targetRadius;
-          const orbitTargetY = mouse.y + Math.sin(this.orbitAngle) * targetRadius;
-
-          const toOrbitAngle = Math.atan2(orbitTargetY - this.y, orbitTargetX - this.x);
-          this.targetAngle = toOrbitAngle;
-          this.vx += Math.cos(toOrbitAngle) * 0.2;
-          this.vy += Math.sin(toOrbitAngle) * 0.2;
+          // 到达附近后，像好奇的水族小生物在光标周围温柔停顿、轻柔浮动，不再转圈
+          this.targetAngle += Math.sin(Date.now() * 0.002) * 0.04;
+          this.vx *= 0.88;
+          this.vy *= 0.88;
         }
       }
 
-      // 默认慢速巡航
+      // D. 默认自由巡航：动作往外推着游，缓慢自然舒展
       if (!hasTarget) {
-        this.targetAngle += (Math.random() - 0.5) * 0.04;
+        this.targetAngle += (Math.random() - 0.5) * 0.035;
       }
 
       // 3. 角度平滑插值
@@ -313,10 +337,13 @@
           seg.x -= dx * stretch * 0.5;
           seg.y -= dy * stretch * 0.5;
 
-          // 3. 流体反向拖尾与横向 S 型水流波动（垂直于身体轴）
-          const wave = Math.sin(this.pulsePhase * 1.5 + j * 0.45 + tIdx) * (0.35 + j * 0.12);
-          seg.x += Math.cos(perpAngle) * wave - (this.vx * 0.4);
-          seg.y += Math.sin(perpAngle) * wave - (this.vy * 0.4);
+          // 3. 经典真实的波浪形触手 (Sine Wave Tentacles)
+          // 触手横向高频波浪起伏，自然随水流律动
+          const wavePhase = this.pulsePhase * 1.8 + j * 0.75 + tIdx * 1.1;
+          const waveAmp = (0.8 + j * 0.28); // 越往触手尾部波浪幅度越开阔自然
+          const waveOffset = Math.sin(wavePhase) * waveAmp;
+          seg.x += Math.cos(perpAngle) * waveOffset - (this.vx * 0.35);
+          seg.y += Math.sin(perpAngle) * waveOffset - (this.vy * 0.35);
         }
       });
     }
@@ -344,10 +371,11 @@
         ctx.lineTo(last.x, last.y);
 
         // 渐变触手（从根部浓郁到尾尖透明消散）
-        const tentacleAlpha = (themeColor.alpha * (tIdx % 2 === 0 ? 0.6 : 0.45));
+        const tentacleAlpha = (themeColor.alpha * (tIdx % 2 === 0 ? 0.75 : 0.55));
         ctx.strokeStyle = `rgba(${themeColor.r}, ${themeColor.g}, ${themeColor.b}, ${tentacleAlpha})`;
-        ctx.lineWidth = Math.max(0.8, (r * 0.065));
+        ctx.lineWidth = Math.max(1.0, (r * 0.08));
         ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
         ctx.stroke();
       });
 
@@ -392,8 +420,16 @@
   // 水母集群与食物管理
   // ==========================================
   let jellyfishes = [];
-  let currentCount = parseInt(localStorage.getItem('hub_jellyfish_count') || '5', 10);
-  if (isNaN(currentCount)) currentCount = 5;
+  let currentCount = 4; // 每次刷新网站默认 4 只状态（最小初始体积）
+  try {
+    const saved = localStorage.getItem('hub_jellyfish_count');
+    if (saved !== null) {
+      const parsed = parseInt(saved, 10);
+      if (!isNaN(parsed) && parsed >= 0 && parsed <= 15) {
+        currentCount = parsed;
+      }
+    }
+  } catch (e) {}
 
   function setJellyfishCount(targetCount) {
     targetCount = Math.max(0, Math.min(15, targetCount));
@@ -487,14 +523,14 @@
     if (decBtn) {
       decBtn.addEventListener('click', e => {
         e.stopPropagation();
-        setJellyfishCount(currentCount - 1);
+        setJellyfishCount(Math.max(0, jellyfishes.length - 1));
       });
     }
 
     if (incBtn) {
       incBtn.addEventListener('click', e => {
         e.stopPropagation();
-        setJellyfishCount(currentCount + 1);
+        setJellyfishCount(Math.min(15, jellyfishes.length + 1));
       });
     }
   });

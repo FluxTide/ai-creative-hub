@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>水母三阶形态 UI 概念展厅 (CodeX 概念级对比)</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0d1117;
+      color: #e6edf3;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 40px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    h1 {
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+      color: #f0f6fc;
+    }
+    p.subtitle {
+      color: #8b949e;
+      font-size: 14px;
+      margin-bottom: 36px;
+    }
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 340px);
+      gap: 24px;
+      max-width: 1080px;
+      width: 100%;
+    }
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: #58a6ff;
+    }
+    .canvas-box {
+      width: 100%;
+      height: 380px;
+      background: radial-gradient(circle at 50% 35%, #1f2937 0%, #0d1117 75%);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid #30363d;
+    }
+    .info {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+    .tag-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .badge {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge.baby { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+    .badge.teen { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+    .badge.elder { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #f0f6fc;
+    }
+    .param-list {
+      font-size: 13px;
+      color: #8b949e;
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: #0d1117;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #21262d;
+    }
+    .param-list span {
+      color: #c9d1d9;
+      font-weight: 500;
+    }
+    .desc {
+      font-size: 13px;
+      color: #8b949e;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <h1>🪼 水母三阶深海形态 UI 概念展厅</h1>
+  <p class="subtitle">实时 Canvas 2D 极客渲染 · 纯代码程序化仿生美学 · 点击上方展台可投喂互动</p>
+
+  <div class="cards-grid">
+    <!-- 初级 -->
+    <div class="card">
+      <div class="canvas-box">
+        <canvas id="babyCanvas" width="340" height="380"></canvas>
+      </div>
+      <div class="info">
+        <div class="tag-row">
+          <span class="card-title">初级 · 幼年体 (Baby)</span>
+          <span class="badge baby">极速 · 300px 感知</span>
+        </div>
+        <div class="param-list">
+          <div>伞盖形态：<span>微圆单层晶莹果冻 (R 16px)</span></div>
+          <div>触手结构：<span>4 根细密轻灵柔性须</span></div>
+          <div>游动特质：<span>推水爆发快、轻巧灵动</span></div>
+        </div>
+        <p class="desc">刷新页面时的初始体。纯粹微光，没有多余赘饰，像初生浮游生物般灵巧敏捷。</p>
+      </div>
+    </div>
+
+    <!-- 中级 -->
+    <div class="card">
+      <div class="canvas-box">
+        <canvas id="teenCanvas" width="340" height="380"></canvas>
+      </div>
+      <div class="info">
+        <div class="tag-row">
+          <span class="card-title">中级 · 成长体 (Teen)</span>
+          <span class="badge teen">适中 · 500px 感知</span>
+        </div>
+        <div class="param-list">
+          <div>伞盖形态：<span>蕾丝波浪花边 + 荧光内囊 (R 23px)</span></div>
+          <div>触手结构：<span>6 根扇形外扩触手 + 渐变微光</span></div>
+          <div>游动特质：<span>平稳中速推进、优雅舒展</span></div>
+        </div>
+        <p class="desc">投喂 2 颗食物后蜕变。伞盖底缘长出波浪褶皱花边，内腔出现微弱荧光核心。</p>
+      </div>
+    </div>
+
+    <!-- 高级 -->
+    <div class="card">
+      <div class="canvas-box">
+        <canvas id="elderCanvas" width="340" height="380"></canvas>
+      </div>
+      <div class="info">
+        <div class="tag-row">
+          <span class="card-title">高级 · 完全体 (Elder)</span>
+          <span class="badge elder">雍容 · 700px 全图感知</span>
+        </div>
+        <div class="param-list">
+          <div>伞盖形态：<span>双层流光外伞 + 结晶核心 (R 32px)</span></div>
+          <div>触手结构：<span>7 根长须 + 2 条丝绸口腕长飘带</span></div>
+          <div>游动特质：<span>超长惯性滑行、王者沉稳</span></div>
+        </div>
+        <p class="desc">投喂 4 颗以上达到巅峰。正中生出双条如丝绸般飘曳的口腕长飘带，体量雍容华贵。</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 渲染函数构建
+    function createJellyDemo(canvasId, stage) {
+      const cvs = document.getElementById(canvasId);
+      const ctx = cvs.getContext('2d');
+      const w = cvs.width;
+      const h = cvs.height;
+
+      let r = stage === 'baby' ? 16 : stage === 'teen' ? 23 : 32;
+      let tentacleCount = stage === 'baby' ? 4 : stage === 'teen' ? 6 : 7;
+      let phase = Math.random() * Math.PI * 2;
+      let pulseSpeed = stage === 'baby' ? 0.038 : stage === 'teen' ? 0.026 : 0.018;
+
+      let x = w / 2;
+      let y = h / 2 - 10;
+      let vy = 0;
+
+      // 触手连杆
+      const tentacles = [];
+      const segCount = stage === 'baby' ? 9 : stage === 'teen' ? 11 : 14;
+      for (let i = 0; i < tentacleCount; i++) {
+        const segs = [];
+        for (let j = 0; j < segCount; j++) {
+          segs.push({ x: x, y: y + j * 6 });
+        }
+        tentacles.push(segs);
+      }
+
+      // 口腕（仅高级体拥有）
+      const oralArms = [];
+      if (stage === 'elder') {
+        for (let i = 0; i < 2; i++) {
+          const arm = [];
+          for (let j = 0; j < 16; j++) {
+            arm.push({ x: x, y: y + j * 7 });
+          }
+          oralArms.push(arm);
+        }
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        phase += pulseSpeed;
+        const cycle = (Math.sin(phase) + 1) / 2;
+
+        // 浮动推水
+        const squishX = 0.88 + (1 - cycle) * 0.22;
+        const squishY = 1.15 - (1 - cycle) * 0.28;
+        y += Math.sin(phase) * (stage === 'baby' ? 0.8 : stage === 'teen' ? 0.5 : 0.35);
+
+        // 触手根部锚定
+        const perp = Math.PI; // 水平
+        const tailDirY = 1;
+
+        // 1. 绘制口腕飘带 (仅高级)
+        if (stage === 'elder') {
+          oralArms.forEach((arm, aIdx) => {
+            const rootX = x + (aIdx === 0 ? -6 : 6);
+            arm[0].x = rootX;
+            arm[0].y = y + 4;
+            for (let j = 1; j < arm.length; j++) {
+              const seg = arm[j];
+              const prev = arm[j - 1];
+              const segDist = r * 0.28;
+              const wave = Math.sin(phase * 1.5 + j * 0.5 + aIdx * 2.0) * (j * 0.9);
+              seg.x += (prev.x + wave - seg.x) * 0.18;
+              seg.y += (prev.y + segDist - seg.y) * 0.18;
+            }
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(arm[0].x, arm[0].y);
+            for (let j = 1; j < arm.length - 1; j++) {
+              const xc = (arm[j].x + arm[j + 1].x) / 2;
+              const yc = (arm[j].y + arm[j + 1].y) / 2;
+              ctx.quadraticCurveTo(arm[j].x, arm[j].y, xc, yc);
+            }
+            ctx.strokeStyle = 'rgba(255, 230, 180, 0.45)';
+            ctx.lineWidth = 3.5;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+            ctx.restore();
+          });
+        }
+
+        // 2. 绘制普通触手
+        tentacles.forEach((tentacle, tIdx) => {
+          const normIdx = (tIdx - (tentacleCount - 1) / 2);
+          const spreadOffset = normIdx * (r * 0.44);
+          const rootX = x + spreadOffset;
+          const rootY = y + (stage === 'elder' ? 6 : 2);
+
+          tentacle[0].x = rootX;
+          tentacle[0].y = rootY;
+
+          const splayPower = Math.abs(normIdx) * 0.4;
+          const segDist = r * 0.32;
+
+          for (let j = 1; j < tentacle.length; j++) {
+            const seg = tentacle[j];
+            const prev = tentacle[j - 1];
+            const splayDecay = Math.max(0, 1 - j * 0.15);
+            const outwardX = normIdx * splayPower * splayDecay * segDist * 0.65;
+
+            const targetX = prev.x + outwardX;
+            const targetY = prev.y + segDist;
+            seg.x += (targetX - seg.x) * 0.22;
+            seg.y += (targetY - seg.y) * 0.22;
+
+            // 波浪
+            const wave = Math.sin(phase * 1.8 + j * 0.7 + tIdx * 1.4) * (0.8 + j * 0.3);
+            seg.x += wave;
+          }
+
+          // 画线
+          ctx.beginPath();
+          ctx.moveTo(tentacle[0].x, tentacle[0].y);
+          for (let j = 1; j < tentacle.length - 1; j++) {
+            const xc = (tentacle[j].x + tentacle[j + 1].x) / 2;
+            const yc = (tentacle[j].y + tentacle[j + 1].y) / 2;
+            ctx.quadraticCurveTo(tentacle[j].x, tentacle[j].y, xc, yc);
+          }
+          const last = tentacle[tentacle.length - 1];
+          ctx.lineTo(last.x, last.y);
+
+          const alpha = (tIdx % 2 === 0 ? 0.75 : 0.55);
+          ctx.strokeStyle = stage === 'baby' ? `rgba(180, 225, 255, ${alpha})` :
+                            stage === 'teen' ? `rgba(215, 175, 255, ${alpha})` :
+                            `rgba(255, 220, 160, ${alpha})`;
+          ctx.lineWidth = Math.max(1.0, r * 0.08);
+          ctx.lineCap = 'round';
+          ctx.stroke();
+        });
+
+        // 3. 绘制水母伞盖
+        ctx.save();
+        ctx.translate(x, y);
+
+        const bw = r * squishX;
+        const bh = r * squishY * 1.08;
+
+        // A. 高级体专属：外伞流光光晕
+        if (stage === 'elder') {
+          ctx.beginPath();
+          ctx.arc(0, -bh * 0.3, bw * 1.35, 0, Math.PI * 2);
+          const outerGlow = ctx.createRadialGradient(0, -bh * 0.3, bw * 0.6, 0, -bh * 0.3, bw * 1.35);
+          outerGlow.addColorStop(0, 'rgba(255, 215, 130, 0.25)');
+          outerGlow.addColorStop(1, 'rgba(255, 215, 130, 0)');
+          ctx.fillStyle = outerGlow;
+          ctx.fill();
+        }
+
+        // B. 伞帽主轮廓
+        ctx.beginPath();
+        ctx.moveTo(-bw, 0);
+        ctx.bezierCurveTo(-bw * 1.05, -bh * 1.38, bw * 1.05, -bh * 1.38, bw, 0);
+
+        // 伞盖底缘（中级/高级长出荷叶边裙摆）
+        if (stage === 'baby') {
+          ctx.bezierCurveTo(bw * 0.5, bh * 0.15, -bw * 0.5, bh * 0.15, -bw, 0);
+        } else {
+          // 花边裙摆贝塞尔波浪
+          const ripples = stage === 'teen' ? 4 : 6;
+          const step = (bw * 2) / ripples;
+          for (let i = ripples; i >= 0; i--) {
+            const rx = -bw + i * step;
+            const ry = Math.sin(i * Math.PI + phase * 2) * (stage === 'teen' ? 2.5 : 4.0);
+            if (i === ripples) ctx.lineTo(rx, ry);
+            else ctx.quadraticCurveTo(rx + step/2, ry + 4, rx, ry);
+          }
+        }
+        ctx.closePath();
+
+        // 填充质感
+        const grad = ctx.createRadialGradient(0, -bh * 0.4, 1, 0, -bh * 0.2, bw * 1.15);
+        if (stage === 'baby') {
+          grad.addColorStop(0, 'rgba(160, 220, 255, 0.75)');
+          grad.addColorStop(0.5, 'rgba(130, 195, 255, 0.4)');
+          grad.addColorStop(1, 'rgba(100, 170, 255, 0.15)');
+        } else if (stage === 'teen') {
+          grad.addColorStop(0, 'rgba(225, 170, 255, 0.85)');
+          grad.addColorStop(0.5, 'rgba(190, 140, 255, 0.45)');
+          grad.addColorStop(1, 'rgba(150, 110, 240, 0.18)');
+        } else {
+          grad.addColorStop(0, 'rgba(255, 225, 160, 0.9)');
+          grad.addColorStop(0.4, 'rgba(255, 195, 120, 0.5)');
+          grad.addColorStop(1, 'rgba(255, 160, 80, 0.2)');
+        }
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        // 轮廓线
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.lineWidth = 1.3;
+        ctx.stroke();
+
+        // C. 伞心内囊与结晶
+        if (stage === 'baby') {
+          // 纯净小微光
+          ctx.beginPath();
+          ctx.arc(0, -bh * 0.35, r * 0.25 * squishX, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+          ctx.fill();
+        } else if (stage === 'teen') {
+          // 荧光内囊
+          ctx.beginPath();
+          ctx.ellipse(0, -bh * 0.38, r * 0.35 * squishX, r * 0.25 * squishY, 0, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+          ctx.fill();
+        } else {
+          // 结晶流光核心（双层四叶草晶体感）
+          ctx.beginPath();
+          ctx.arc(0, -bh * 0.38, r * 0.32, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.arc(0, -bh * 0.38, r * 0.5, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255, 235, 180, 0.35)';
+          ctx.fill();
+        }
+
+        ctx.restore();
+
+        requestAnimationFrame(draw);
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    createJellyDemo('babyCanvas', 'baby');
+    createJellyDemo('teenCanvas', 'teen');
+    createJellyDemo('elderCanvas', 'elder');
+  </script>
+</body>
+</html>

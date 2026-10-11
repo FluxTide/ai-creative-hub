@@ -1,162 +1,166 @@
-// ==========================================
-// 陪伴水母 Canvas 2D 物理动力学与喂食系统 V2.0
-// ==========================================
+// ============================================================================
+// 🪼 水母娱乐系统 V2.0：深海电子宠物生态引擎
+// 基于 CodeX 规范设计：三阶进化形态、绝对坐标全长页漫游、三段柔性触角与丝绸口腕
+// ============================================================================
 (function() {
   const canvas = document.getElementById('jellyfishCanvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
 
-  let width = (canvas.width = window.innerWidth);
-  let height = (canvas.height = window.innerHeight);
+  // 1. 全长页绝对坐标尺寸管理
+  let pageW = (canvas.width = window.innerWidth);
+  let pageH = (canvas.height = Math.max(
+    document.documentElement.scrollHeight,
+    document.body.scrollHeight,
+    window.innerHeight
+  ));
 
-  window.addEventListener('resize', () => {
-    width = canvas.width = window.innerWidth;
-    height = canvas.height = window.innerHeight;
+  function updateCanvasDimensions() {
+    pageW = canvas.width = window.innerWidth;
+    pageH = canvas.height = Math.max(
+      document.documentElement.scrollHeight,
+      document.body.scrollHeight,
+      window.innerHeight
+    );
+  }
+
+  window.addEventListener('resize', updateCanvasDimensions);
+  window.addEventListener('load', updateCanvasDimensions);
+
+  // 页面动态变化监听
+  const resizeObserver = new ResizeObserver(() => {
+    updateCanvasDimensions();
   });
+  if (document.body) {
+    resizeObserver.observe(document.body);
+  }
 
-  // 鼠标追踪与长按计时
+  // 2. 鼠标长按与点击（支持页面滚动偏移）
   const mouse = {
-    x: -1000,
-    y: -1000,
+    x: -2000,
+    y: -2000,
     isDown: false,
     downStartTime: 0,
-    downX: -1000,
-    downY: -1000
+    downX: -2000,
+    downY: -2000
   };
 
-  // 食物列表
+  // 3. 浮游食物系统
   const foods = [];
-
-  window.addEventListener('mousemove', e => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-  });
-
-  window.addEventListener('mousedown', e => {
-    mouse.isDown = true;
-    mouse.downStartTime = performance.now();
-    mouse.downX = e.clientX;
-    mouse.downY = e.clientY;
-  });
-
-  window.addEventListener('mouseup', e => {
-    const pressDuration = performance.now() - mouse.downStartTime;
-    mouse.isDown = false;
-
-    // 如果是轻触/单次点击（不是长按）
-    if (pressDuration < 280) {
-      // 先检测是否点击中了某只水母（触发惊吓：跑掉，但不会跑太远）
-      let hitJelly = false;
-      for (let i = 0; i < jellyfishes.length; i++) {
-        const j = jellyfishes[i];
-        const dist = Math.hypot(e.clientX - j.x, e.clientY - j.y);
-        if (dist < j.radius * 1.6) {
-          // 准确点中了小水母！水母受到轻微惊吓逃跑
-          hitJelly = true;
-          const scareAngle = Math.atan2(j.y - e.clientY, j.x - e.clientX);
-          j.scaredAngle = scareAngle + (Math.random() - 0.5) * 0.25;
-          j.scaredTimer = 40; // 持续约 0.6 秒的适度推水逃离，不会飞出视野
-          j.vx += Math.cos(j.scaredAngle) * 2.0;
-          j.vy += Math.sin(j.scaredAngle) * 2.0;
-          spawnBubbles(j.x, j.y, 4);
-          break;
-        }
-      }
-
-      // 如果没有点中小水母，且不在按钮或卡片上，则在点击位置投下 1 颗水母浮游食物
-      if (!hitJelly && !e.target.closest('.modal-overlay, button, input, a, .work-card')) {
-        spawnFood(e.clientX, e.clientY);
-        spawnBubbles(e.clientX, e.clientY, 3);
-      }
-    }
-  });
-
-  // 投喂食物（漂浮的小金粒/星光水母粮）
-  function spawnFood(x, y) {
-    if (foods.length >= 25) foods.shift(); // 最多同时存在 25 颗
+  function spawnFood(px, py) {
+    if (foods.length > 10) foods.shift();
     foods.push({
-      x: x + (Math.random() - 0.5) * 12,
-      y: y + (Math.random() - 0.5) * 12,
-      vy: 0.15 + Math.random() * 0.25, // 缓缓下沉
-      vx: (Math.random() - 0.5) * 0.3,
-      radius: 4.5 + Math.random() * 2,
+      x: px,
+      y: py,
+      vy: 0.12 + Math.random() * 0.18,
+      vx: (Math.random() - 0.5) * 0.2,
+      radius: 4.5,
+      glowPhase: Math.random() * Math.PI * 2,
       life: 1.0,
-      sparkle: Math.random() * Math.PI * 2
+      decay: 0.0006
     });
   }
 
-  // 获取当前主题色彩
-  function getThemeColor() {
-    const theme = document.documentElement.getAttribute('data-theme') || 'cloud-dancer';
-    const mode = document.documentElement.getAttribute('data-mode') || 'light';
-
-    const colors = {
-      'cloud-dancer': { r: 212, g: 175, b: 122 }, // 暖米金
-      'floral-dream': { r: 218, g: 140, b: 180 }, // 晨曦玫瑰粉
-      'corundum-blue': { r: 90, g: 155, b: 245 }, // 科技克莱因蓝
-      'kiwi-green': { r: 120, g: 195, b: 150 }, // 清新奇异果绿
-      'spicy-red': { r: 235, g: 110, b: 110 }, // 肉桂暖红
-      'teal-duck': { r: 80, g: 195, b: 195 }, // 莫兰迪水鸭绿
-      'geist': { r: 180, g: 185, b: 195 } // 极简银白灰
-    };
-
-    const c = colors[theme] || colors['cloud-dancer'];
-    const alpha = mode === 'dark' ? 0.8 : 0.6;
-    return { ...c, alpha };
-  }
-
-  // 气泡粒子系统
+  // 4. 浮游与受惊气泡系统
   const bubbles = [];
-  function spawnBubbles(x, y, count = 3) {
+  function spawnBubble(px, py, count = 1, isScared = false) {
     for (let i = 0; i < count; i++) {
+      if (bubbles.length > 50) bubbles.shift();
       bubbles.push({
-        x: x + (Math.random() - 0.5) * 20,
-        y: y + (Math.random() - 0.5) * 20,
-        radius: 1.5 + Math.random() * 2.8,
-        vy: -0.6 - Math.random() * 1.2,
-        vx: (Math.random() - 0.5) * 0.4,
-        alpha: 0.4 + Math.random() * 0.4,
-        life: 1.0
+        x: px + (Math.random() - 0.5) * 12,
+        y: py + (Math.random() - 0.5) * 12,
+        r: isScared ? 1.5 + Math.random() * 2.8 : 1.0 + Math.random() * 2.0,
+        vy: -(0.5 + Math.random() * (isScared ? 1.8 : 0.9)),
+        vx: (Math.random() - 0.5) * (isScared ? 1.2 : 0.5),
+        alpha: isScared ? 0.75 : 0.5
       });
     }
   }
 
-  // ==========================================
-  // 水母实体类
-  // ==========================================
+  // 5. 主题颜色取色器（完美适配现有 7 套主题）
+  function getThemeColor() {
+    const theme = document.documentElement.getAttribute('data-theme') || 'cloud-dancer';
+    const mode = document.documentElement.getAttribute('data-mode') || 'light';
+    const isDark = (mode === 'dark') || (mode === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+    const themeColors = {
+      'cloud-dancer': isDark ? { r: 160, g: 195, b: 240, alpha: 0.85 } : { r: 100, g: 155, b: 225, alpha: 0.8 },
+      'blossom-dream': isDark ? { r: 235, g: 160, b: 205, alpha: 0.85 } : { r: 210, g: 130, b: 180, alpha: 0.8 },
+      'corundum-blue': isDark ? { r: 140, g: 190, b: 255, alpha: 0.85 } : { r: 70, g: 135, b: 230, alpha: 0.8 },
+      'kiwi-green': isDark ? { r: 160, g: 225, b: 175, alpha: 0.85 } : { r: 90, g: 195, b: 120, alpha: 0.8 },
+      'spicy-red': isDark ? { r: 255, g: 155, b: 155, alpha: 0.85 } : { r: 225, g: 95, b: 95, alpha: 0.8 },
+      'teal-water': isDark ? { r: 140, g: 225, b: 225, alpha: 0.85 } : { r: 60, g: 185, b: 185, alpha: 0.8 },
+      'geist': isDark ? { r: 220, g: 225, b: 235, alpha: 0.85 } : { r: 120, g: 130, b: 145, alpha: 0.8 }
+    };
+
+    return themeColors[theme] || themeColors['cloud-dancer'];
+  }
+
+  // ============================================================================
+  // 6. 核心水母类 (Jellyfish Entity)
+  // ============================================================================
   class Jellyfish {
-    constructor() {
-      this.reset(true);
-    }
+    constructor(x, y) {
+      this.x = x;
+      this.y = y;
 
-    reset(initial = false) {
-      this.baseRadius = 14 + Math.random() * 4; // 最小巧可爱的体积 (14~18px)
-      this.growth = 0; // 进食生长增量
-      this.maxGrowth = 16; // 最大长大上限
+      // 进食与进化体系
+      this.feedCount = 0; // 累计进食次数
+      this.stage = 'baby'; // 'baby' | 'teen' | 'elder'
 
-      this.x = Math.random() * width;
-      this.y = initial ? Math.random() * height : height + 50;
-
-      this.vx = 0;
+      // 物理与运动属性
+      this.baseRadius = 15 + Math.random() * 2.5; // 幼年体基准 14-18px
+      this.radius = this.baseRadius;
+      this.vx = (Math.random() - 0.5) * 0.4;
       this.vy = -(0.2 + Math.random() * 0.3);
       this.angle = -Math.PI / 2; // 默认朝上游动
-      this.targetAngle = -Math.PI / 2;
-      this.orbitAngle = Math.random() * Math.PI * 2; // 绕鼠标转圈相位
+      this.targetAngle = this.angle;
 
-      // 脉动心跳参数
+      // 脉动周期 (0~1)
       this.pulsePhase = Math.random() * Math.PI * 2;
-      this.pulseSpeed = 0.024 + Math.random() * 0.012; // 缓慢温和
-      this.squish = 1;
-      this.isContracting = false;
+      this.pulseSpeed = 0.038; // 幼年体最快，随阶段变慢
 
-      // 触手系统（柔性连杆）
-      this.tentacleCount = 4 + Math.floor(Math.random() * 3); // 4~6条
+      // 受惊与进食散开计时器
+      this.scaredTimer = 0;
+      this.scaredAngle = 0;
+      this.dispersalTimer = 0;
+      this.dispersalAngle = 0;
+
+      // 初始化骨骼与触手
       this.tentacles = [];
-      const segmentCount = 9;
+      this.oralArms = [];
+      this.initAppendages();
+    }
 
-      for (let i = 0; i < this.tentacleCount; i++) {
+    // 根据当前 feedCount 更新成长阶段与形态参数
+    updateStageParams() {
+      if (this.feedCount >= 4) {
+        this.stage = 'elder';
+        this.baseRadius = 29 + Math.min(4, (this.feedCount - 4) * 0.8); // 28-34px
+        this.pulseSpeed = 0.020;
+      } else if (this.feedCount >= 2) {
+        this.stage = 'teen';
+        this.baseRadius = 21 + (this.feedCount - 2) * 2.0; // 20-24px
+        this.pulseSpeed = 0.028;
+      } else {
+        this.stage = 'baby';
+        this.baseRadius = 15 + this.feedCount * 1.5; // 14-18px
+        this.pulseSpeed = 0.038;
+      }
+      this.radius = this.baseRadius;
+    }
+
+    // 初始化/更新触手与口腕骨骼节点
+    initAppendages() {
+      this.updateStageParams();
+
+      const tentacleCount = this.stage === 'baby' ? 4 : (this.stage === 'teen' ? 6 : 7);
+      const segCount = this.stage === 'baby' ? 9 : (this.stage === 'teen' ? 11 : 13);
+
+      this.tentacles = [];
+      for (let i = 0; i < tentacleCount; i++) {
         const segs = [];
-        for (let j = 0; j < segmentCount; j++) {
+        for (let j = 0; j < segCount; j++) {
           segs.push({
             x: this.x,
             y: this.y + j * 5,
@@ -164,362 +168,548 @@
             vy: 0
           });
         }
-        this.tentacles.push(segs);
+        this.tentacles.push({
+          segments: segs,
+          phaseOffset: i * 0.95 + Math.random() * 0.4,
+          freqMult: 0.9 + Math.random() * 0.25
+        });
+      }
+
+      // 口腕（完全体专属：2条中央丝带）
+      this.oralArms = [];
+      if (this.stage === 'elder') {
+        for (let i = 0; i < 2; i++) {
+          const armSegs = [];
+          for (let j = 0; j < 15; j++) {
+            armSegs.push({
+              x: this.x,
+              y: this.y + j * 6,
+              vx: 0,
+              vy: 0
+            });
+          }
+          this.oralArms.push({
+            segments: armSegs,
+            phaseOffset: i * Math.PI + Math.random() * 0.5
+          });
+        }
       }
     }
 
-    get radius() {
-      return this.baseRadius + this.growth;
-    }
+    // 每一帧更新状态与物理
+    update(allJellies) {
+      this.updateStageParams();
 
-    eat(food) {
-      if (this.growth < this.maxGrowth) {
-        this.growth += 1.8; // 每次吃一颗长大一点点！
-      }
-      spawnBubbles(food.x, food.y, 4);
-    }
-
-    update() {
-      // 1. 真实水母收缩推水推进力（动作往外推出去的那种感觉：有力向外冲刺，然后慢速惯性滑行舒张）
+      // 1. 脉动周期与推水爆发 (Thrust vs Glide)
       this.pulsePhase += this.pulseSpeed;
-      const pulseCycle = (Math.sin(this.pulsePhase) + 1) / 2; // 0~1
+      const pulseCycle = (Math.sin(this.pulsePhase) + 1) / 2;
 
-      // 当收缩瞬间喷射时，赋予动作往外推出去的前进推力
-      if (pulseCycle > 0.82 && !this.isContracting) {
-        this.isContracting = true;
-        const pushThrust = 1.35 + Math.random() * 0.45; // 动作往外推出去的爆发推力
+      // 处于收缩喷射的瞬间 (峰值爆发点)
+      const isContracting = Math.cos(this.pulsePhase) > 0.88;
+      let thrustScale = this.stage === 'baby' ? 1.35 : (this.stage === 'teen' ? 1.05 : 0.85);
+
+      if (isContracting) {
+        const pushThrust = thrustScale * (0.85 + Math.random() * 0.35);
         this.vx += Math.cos(this.angle) * pushThrust;
         this.vy += Math.sin(this.angle) * pushThrust;
 
-        if (Math.random() < 0.35) {
-          spawnBubbles(this.x, this.y, 2);
+        // 伴随微小气泡喷出
+        if (Math.random() < 0.25) {
+          spawnBubble(this.x - Math.cos(this.angle) * this.radius, this.y - Math.sin(this.angle) * this.radius, 1, false);
         }
-      } else if (pulseCycle <= 0.82) {
-        this.isContracting = false;
       }
 
-      // 自然流体滑行阻尼（维持推出去之后的平滑滑行）
-      this.vx *= 0.93;
-      this.vy *= 0.93;
-      this.vy -= 0.01;
+      // 2. 行为 AI 状态机 (优先级：抢食散开 > 受惊逃跑 > 寻找食物 > 鼠标长按 > 自由巡航)
+      const foodPerceptionRadius = this.stage === 'baby' ? 300 : (this.stage === 'teen' ? 500 : 700);
 
-      // 2. 目标导向行为逻辑（优先级：被点击惊吓 > 吃食物 > 慢速伴游 > 自由推水巡航）
-      let hasTarget = false;
-
-      // A. 检查受惊吓逃跑状态（点击水母后触发：跑掉，但不会跑太远）
-      if (this.scaredTimer && this.scaredTimer > 0) {
+      if (this.dispersalTimer > 0) {
+        // A. 抢食吞食完毕：即刻反向散开，绝不原地重叠
+        this.dispersalTimer--;
+        this.targetAngle = this.dispersalAngle;
+        this.vx += Math.cos(this.dispersalAngle) * 0.45;
+        this.vy += Math.sin(this.dispersalAngle) * 0.45;
+      } else if (this.scaredTimer > 0) {
+        // B. 点触受惊：反向避让 150-200px
         this.scaredTimer--;
-        hasTarget = true;
         this.targetAngle = this.scaredAngle;
-        // 温和爆发推力离开，随后快速恢复平静
-        this.vx += Math.cos(this.scaredAngle) * 0.45;
-        this.vy += Math.sin(this.scaredAngle) * 0.45;
-      }
-
-      // B. 检查是否有附近的食物（寻食行为）
-      if (!hasTarget && foods.length > 0) {
+        this.vx += Math.cos(this.scaredAngle) * 0.55;
+        this.vy += Math.sin(this.scaredAngle) * 0.55;
+        if (this.scaredTimer % 8 === 0) {
+          spawnBubble(this.x, this.y, 2, true);
+        }
+      } else {
+        // C. 食物感知雷达
         let nearestFood = null;
-        let minDist = 450;
+        let nearestDist = Infinity;
 
         for (let i = 0; i < foods.length; i++) {
           const f = foods[i];
-          const fdx = f.x - this.x;
-          const fdy = f.y - this.y;
-          const dist = Math.sqrt(fdx * fdx + fdy * fdy);
-
-          // 碰撞检测：吃到食物！
-          if (dist < this.radius * 0.9) {
-            this.eat(f);
-            foods.splice(i, 1);
-            break;
-          }
-
-          if (dist < minDist) {
-            minDist = dist;
+          const dist = Math.hypot(f.x - this.x, f.y - this.y);
+          if (dist < foodPerceptionRadius && dist < nearestDist) {
+            nearestDist = dist;
             nearestFood = f;
           }
         }
 
         if (nearestFood) {
-          hasTarget = true;
-          const foodAngle = Math.atan2(nearestFood.y - this.y, nearestFood.x - this.x);
-          this.targetAngle = foodAngle;
-          // 慢慢游向食物
-          this.vx += Math.cos(foodAngle) * 0.18;
-          this.vy += Math.sin(foodAngle) * 0.18;
-        }
-      }
+          // 朝食物加速逼近
+          this.targetAngle = Math.atan2(nearestFood.y - this.y, nearestFood.x - this.x);
+          const approachSpeed = (this.stage === 'baby' ? 0.38 : (this.stage === 'teen' ? 0.28 : 0.22));
+          this.vx += Math.cos(this.targetAngle) * approachSpeed;
+          this.vy += Math.sin(this.targetAngle) * approachSpeed;
 
-      // C. 检查鼠标长按：水母慢慢推过来，并在光标附近自然徘徊（告别死板转圈）
-      if (!hasTarget && mouse.isDown) {
-        const mdx = mouse.x - this.x;
-        const mdy = mouse.y - this.y;
-        const mDist = Math.sqrt(mdx * mdx + mdy * mdy);
+          // 吞食判定
+          if (nearestDist < this.radius * 1.25) {
+            const fIdx = foods.indexOf(nearestFood);
+            if (fIdx !== -1) {
+              foods.splice(fIdx, 1);
+              this.feedCount++;
+              // 重新检查触手形态是否升级
+              this.initAppendages();
 
-        hasTarget = true;
-        if (mDist > 85) {
-          // 慢慢游向鼠标方向（推出去的那种动作）
-          const seekAngle = Math.atan2(mouse.y - this.y, mouse.x - this.x);
-          this.targetAngle = seekAngle;
-          this.vx += Math.cos(seekAngle) * 0.2;
-          this.vy += Math.sin(seekAngle) * 0.2;
+              // 激发【抢食吞食散开冲量】
+              this.dispersalTimer = 45;
+              this.dispersalAngle = this.angle + Math.PI + (Math.random() - 0.5) * 0.8;
+              spawnBubble(this.x, this.y, 4, true);
+            }
+          }
+        } else if (mouse.isDown && mouse.x > 0) {
+          // D. 鼠标长按：温柔伴游
+          const mDist = Math.hypot(mouse.x - this.x, mouse.y - this.y);
+          if (mDist < 800) {
+            this.targetAngle = Math.atan2(mouse.y - this.y, mouse.x - this.x);
+            if (mDist > this.radius * 2.2) {
+              this.vx += Math.cos(this.targetAngle) * 0.18;
+              this.vy += Math.sin(this.targetAngle) * 0.18;
+            } else {
+              this.vx *= 0.88;
+              this.vy *= 0.88;
+            }
+          }
         } else {
-          // 到达附近后，像好奇的水族小生物在光标周围温柔停顿、轻柔浮动，不再转圈
-          this.targetAngle += Math.sin(Date.now() * 0.002) * 0.04;
-          this.vx *= 0.88;
-          this.vy *= 0.88;
+          // E. 自由从容巡航
+          if (Math.random() < 0.015) {
+            this.targetAngle += (Math.random() - 0.5) * 0.7;
+          }
         }
       }
 
-      // D. 默认自由巡航：动作往外推着游，缓慢自然舒展
-      if (!hasTarget) {
-        this.targetAngle += (Math.random() - 0.5) * 0.035;
+      // 3. 同伴排斥场 (Social Distance - 绝不挤压重叠)
+      for (const other of allJellies) {
+        if (other === this) continue;
+        const dx = this.x - other.x;
+        const dy = this.y - other.y;
+        const dist = Math.hypot(dx, dy);
+        const minDist = (this.radius + other.radius) * 2.5;
+
+        if (dist > 0 && dist < minDist) {
+          const repelForce = (1 - dist / minDist) * 0.35;
+          const repAngle = Math.atan2(dy, dx);
+          this.vx += Math.cos(repAngle) * repelForce;
+          this.vy += Math.sin(repAngle) * repelForce;
+        }
       }
 
-      // 3. 角度平滑插值
-      let angleDiff = this.targetAngle - this.angle;
-      while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
-      while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
-      this.angle += angleDiff * 0.05;
+      // 4. 航向平滑转向 (Lerp)
+      let diff = this.targetAngle - this.angle;
+      while (diff < -Math.PI) diff += Math.PI * 2;
+      while (diff > Math.PI) diff -= Math.PI * 2;
+      this.angle += diff * (this.stage === 'baby' ? 0.09 : 0.05);
 
-      // 4. 更新坐标
+      // 阻尼衰减
+      const drag = this.stage === 'baby' ? 0.94 : (this.stage === 'teen' ? 0.93 : 0.91);
+      this.vx *= drag;
+      this.vy *= drag;
+
       this.x += this.vx;
       this.y += this.vy;
 
-      // 屏幕边界循环
-      if (this.x < -70) this.x = width + 70;
-      if (this.x > width + 70) this.x = -70;
-      if (this.y < -70) this.y = height + 70;
-      if (this.y > height + 70) this.y = -70;
+      // 5. 网页绝对坐标边界环绕（整个长画卷）
+      const pad = this.radius * 2;
+      if (this.x < -pad) this.x = pageW + pad;
+      if (this.x > pageW + pad) this.x = -pad;
+      if (this.y < -pad) this.y = pageH + pad;
+      if (this.y > pageH + pad) this.y = -pad;
 
-      // 5. 重点：伞帽底沿与触手的精密无缝外扩衔接（顺应伞盖弧度向外扇形扩展，彻底消除内聚缠绕）
-      const r = this.radius;
-      const baseCenterDistance = r * 0.12;
-      const bellBottomX = this.x - Math.cos(this.angle) * baseCenterDistance;
-      const bellBottomY = this.y - Math.sin(this.angle) * baseCenterDistance;
-
-      // 触手横向排列轴垂直于游动方向
-      const perpAngle = this.angle + Math.PI / 2;
-      const tailDirX = -Math.cos(this.angle);
-      const tailDirY = -Math.sin(this.angle);
-
-      this.tentacles.forEach((tentacle, tIdx) => {
-        // 沿伞帽圆弧边缘等分，并自然向外侧弧度外扩（扇形发散）
-        const normIdx = (tIdx - (this.tentacleCount - 1) / 2); // 负数在左侧，正数在右侧
-        const spreadOffset = normIdx * (r * 0.42); // 根部间距自然拉开
-
-        // 根部起始点顺着伞盖圆弧边缘外扩贴合
-        const rootX = bellBottomX + Math.cos(perpAngle) * spreadOffset;
-        const rootY = bellBottomY + Math.sin(perpAngle) * spreadOffset;
-
-        // 根部 100% 锁死在伞帽底边缘
-        tentacle[0].x = rootX;
-        tentacle[0].y = rootY;
-
-        // 核心外扩角度：顺着伞盖边缘切线往外自然散开，外侧触角外扩倾斜角更大（扇形散开约 18°~28°）
-        const splayAngle = perpAngle + (normIdx > 0 ? 0 : Math.PI); // 向外的侧向分量
-        const splayPower = Math.abs(normIdx) * 0.35; // 外扩力度
-
-        const segDist = (r * 0.32);
-
-        for (let j = 1; j < tentacle.length; j++) {
-          const seg = tentacle[j];
-          const prev = tentacle[j - 1];
-
-          // 1. 顺应身体尾部舒展 + 根部向外自然扇形扩散
-          // 靠近根部时外扩力更强，顺应伞盖弧度向外撑开；越往尾梢逐渐收拢随流下垂
-          const splayDecay = Math.max(0, 1 - j * 0.16);
-          const outwardX = Math.cos(perpAngle) * (normIdx * splayPower * splayDecay * segDist * 0.6);
-          const outwardY = Math.sin(perpAngle) * (normIdx * splayPower * splayDecay * segDist * 0.6);
-
-          const naturalTargetX = prev.x + tailDirX * segDist + outwardX;
-          const naturalTargetY = prev.y + tailDirY * segDist + outwardY;
-          seg.x += (naturalTargetX - seg.x) * 0.22;
-          seg.y += (naturalTargetY - seg.y) * 0.22;
-
-          // 2. 绳索间距约束 (Verlet distance constraint)
-          const dx = seg.x - prev.x;
-          const dy = seg.y - prev.y;
-          const curDist = Math.sqrt(dx * dx + dy * dy) || 1;
-          const stretch = (curDist - segDist) / curDist;
-          seg.x -= dx * stretch * 0.5;
-          seg.y -= dy * stretch * 0.5;
-
-          // 3. 独立多相位正弦波浪（波浪沿自身扇形发散方向起伏，消除螺旋重叠！）
-          // 每根触手拥有独立初始相位错开，避免不同触手在同一点交叉缠绕
-          const wavePhase = this.pulsePhase * 1.8 + j * 0.75 + tIdx * 1.5;
-          const waveAmp = (0.7 + j * 0.26); // 根部小波浪，末端柔和飘摆
-          const waveOffset = Math.sin(wavePhase) * waveAmp;
-          seg.x += Math.cos(perpAngle) * waveOffset - (this.vx * 0.35);
-          seg.y += Math.sin(perpAngle) * waveOffset - (this.vy * 0.35);
-        }
-      });
+      // 6. 更新骨骼：触手与口腕
+      this.updateSkeleton(pulseCycle);
     }
 
-    draw(themeColor) {
-      const pulseCycle = (Math.sin(this.pulsePhase) + 1) / 2;
-      const squishX = 0.88 + (1 - pulseCycle) * 0.22; // 0.88 ~ 1.1
-      const squishY = 1.15 - (1 - pulseCycle) * 0.28; // 0.87 ~ 1.15
+    // 骨骼与连杆物理运算 (Verlet 柔性节点)
+    updateSkeleton(pulseCycle) {
       const r = this.radius;
+      const tailDirX = -Math.cos(this.angle);
+      const tailDirY = -Math.sin(this.angle);
+      const perpAngle = this.angle + Math.PI / 2;
+      const perpX = Math.cos(perpAngle);
+      const perpY = Math.sin(perpAngle);
+
+      // A. 更新普通触手
+      const tCount = this.tentacles.length;
+      this.tentacles.forEach((tObj, tIdx) => {
+        const segs = tObj.segments;
+        // 伞盖边缘扇形分布 (±42°)
+        const normIdx = (tIdx - (tCount - 1) / 2);
+        const spreadOffset = normIdx * (r * (0.84 / (tCount / 2)));
+        const rootX = this.x - Math.cos(this.angle) * (r * 0.15) + perpX * spreadOffset;
+        const rootY = this.y - Math.sin(this.angle) * (r * 0.15) + perpY * spreadOffset;
+
+        segs[0].x = rootX;
+        segs[0].y = rootY;
+
+        const splayPower = Math.abs(normIdx) * 0.38;
+        const segDist = r * 0.32;
+
+        for (let j = 1; j < segs.length; j++) {
+          const seg = segs[j];
+          const prev = segs[j - 1];
+
+          // 向外扇形导流
+          const splayDecay = Math.max(0, 1 - j * 0.16);
+          const outwardX = perpX * normIdx * splayPower * splayDecay * segDist * 0.65;
+          const outwardY = perpY * normIdx * splayPower * splayDecay * segDist * 0.65;
+
+          const targetX = prev.x + tailDirX * segDist + outwardX;
+          const targetY = prev.y + tailDirY * segDist + outwardY;
+
+          seg.x += (targetX - seg.x) * 0.22;
+          seg.y += (targetY - seg.y) * 0.22;
+
+          // 双重正弦柔性涟漪
+          const wavePhase = this.pulsePhase * 1.8 + j * 0.75 + tObj.phaseOffset;
+          const waveAmp = (0.7 + j * 0.26);
+          seg.x += perpX * Math.sin(wavePhase) * waveAmp;
+          seg.y += perpY * Math.sin(wavePhase) * waveAmp;
+        }
+      });
+
+      // B. 更新口腕丝带 (完全体专属)
+      if (this.stage === 'elder') {
+        this.oralArms.forEach((armObj, aIdx) => {
+          const armSegs = armObj.segments;
+          const armOffset = (aIdx === 0 ? -1 : 1) * (r * 0.22);
+          const rootX = this.x + perpX * armOffset;
+          const rootY = this.y + perpY * armOffset;
+
+          armSegs[0].x = rootX;
+          armSegs[0].y = rootY;
+
+          const armSegDist = r * 0.34;
+          for (let j = 1; j < armSegs.length; j++) {
+            const seg = armSegs[j];
+            const prev = armSegs[j - 1];
+
+            // 丝绸大 S 形摆荡
+            const sWave = Math.sin(this.pulsePhase * 1.3 + j * 0.45 + armObj.phaseOffset) * (j * 0.85);
+            const targetX = prev.x + tailDirX * armSegDist + perpX * sWave;
+            const targetY = prev.y + tailDirY * armSegDist + perpY * sWave;
+
+            seg.x += (targetX - seg.x) * 0.18;
+            seg.y += (targetY - seg.y) * 0.18;
+          }
+        });
+      }
+    }
+
+    // ========================================================================
+    // 绘制管道：按 CodeX 规范分层渲染
+    // 01·外伞流光 -> 02·后层口腕 -> 03·普通触手 -> 04·主伞盖与花边 -> 05·生殖腺与晶核
+    // ========================================================================
+    draw(themeColor) {
+      const r = this.radius;
+      const pulseCycle = (Math.sin(this.pulsePhase) + 1) / 2;
+      const squishX = 0.88 + (1 - pulseCycle) * 0.22;
+      const squishY = 1.15 - (1 - pulseCycle) * 0.28;
 
       ctx.save();
 
-      // 1. 绘制柔性触手（平滑三次贝塞尔曲线）
-      this.tentacles.forEach((tentacle, tIdx) => {
+      // 1. 完全体：双层流光外伞发光层 (Outer Glow)
+      if (this.stage === 'elder') {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.angle + Math.PI / 2);
+        const glowR = r * 1.5;
+        const radialGlow = ctx.createRadialGradient(0, -r * 0.3, r * 0.4, 0, -r * 0.3, glowR);
+        radialGlow.addColorStop(0, `rgba(${themeColor.r}, ${themeColor.g}, ${themeColor.b}, 0.22)`);
+        radialGlow.addColorStop(1, `rgba(${themeColor.r}, ${themeColor.g}, ${themeColor.b}, 0)`);
+        ctx.fillStyle = radialGlow;
         ctx.beginPath();
-        ctx.moveTo(tentacle[0].x, tentacle[0].y);
+        ctx.arc(0, -r * 0.3, glowR, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
 
-        for (let j = 1; j < tentacle.length - 1; j++) {
-          const xc = (tentacle[j].x + tentacle[j + 1].x) / 2;
-          const yc = (tentacle[j].y + tentacle[j + 1].y) / 2;
-          ctx.quadraticCurveTo(tentacle[j].x, tentacle[j].y, xc, yc);
+      // 2. 完全体：中央 2 条丝绸口腕长飘带 (Oral Arms)
+      if (this.stage === 'elder') {
+        this.oralArms.forEach((armObj, aIdx) => {
+          const armSegs = armObj.segments;
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(armSegs[0].x, armSegs[0].y);
+          for (let j = 1; j < armSegs.length - 1; j++) {
+            const xc = (armSegs[j].x + armSegs[j + 1].x) / 2;
+            const yc = (armSegs[j].y + armSegs[j + 1].y) / 2;
+            ctx.quadraticCurveTo(armSegs[j].x, armSegs[j].y, xc, yc);
+          }
+          const last = armSegs[armSegs.length - 1];
+          ctx.lineTo(last.x, last.y);
+
+          // 宽带状丝绸质感
+          ctx.strokeStyle = `rgba(255, 235, 190, 0.42)`;
+          ctx.lineWidth = Math.max(2.8, r * 0.16);
+          ctx.lineCap = 'round';
+          ctx.stroke();
+
+          // 丝绸中央亮脊线
+          ctx.strokeStyle = `rgba(255, 255, 255, 0.65)`;
+          ctx.lineWidth = 1.0;
+          ctx.stroke();
+          ctx.restore();
+        });
+      }
+
+      // 3. 普通触手 (4 / 6 / 7 根)
+      this.tentacles.forEach((tObj, tIdx) => {
+        const segs = tObj.segments;
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(segs[0].x, segs[0].y);
+        for (let j = 1; j < segs.length - 1; j++) {
+          const xc = (segs[j].x + segs[j + 1].x) / 2;
+          const yc = (segs[j].y + segs[j + 1].y) / 2;
+          ctx.quadraticCurveTo(segs[j].x, segs[j].y, xc, yc);
         }
-
-        const last = tentacle[tentacle.length - 1];
+        const last = segs[segs.length - 1];
         ctx.lineTo(last.x, last.y);
 
-        // 渐变触手（从根部浓郁到尾尖透明消散）
-        const tentacleAlpha = (themeColor.alpha * (tIdx % 2 === 0 ? 0.75 : 0.55));
-        ctx.strokeStyle = `rgba(${themeColor.r}, ${themeColor.g}, ${themeColor.b}, ${tentacleAlpha})`;
-        ctx.lineWidth = Math.max(1.0, (r * 0.08));
+        const tAlpha = themeColor.alpha * (tIdx % 2 === 0 ? 0.75 : 0.55);
+        ctx.strokeStyle = `rgba(${themeColor.r}, ${themeColor.g}, ${themeColor.b}, ${tAlpha})`;
+        ctx.lineWidth = Math.max(0.9, r * 0.08);
         ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
         ctx.stroke();
+        ctx.restore();
       });
 
-      // 2. 绘制水母伞帽（贝塞尔流线）
+      // 4. 伞盖主轮廓与边缘花边 (Bell & Ripple Rim)
+      ctx.save();
       ctx.translate(this.x, this.y);
       ctx.rotate(this.angle + Math.PI / 2);
 
-      const w = r * squishX;
-      const h = r * squishY * 1.05;
+      const bw = r * squishX;
+      const bh = r * squishY * 1.12;
 
       ctx.beginPath();
-      ctx.moveTo(-w, 0);
-      ctx.bezierCurveTo(-w * 1.05, -h * 1.35, w * 1.05, -h * 1.35, w, 0);
-      // 底沿波浪闭合
-      ctx.bezierCurveTo(w * 0.5, h * 0.15, -w * 0.5, h * 0.15, -w, 0);
+      ctx.moveTo(-bw, 0);
+      // 上半球外伞拱形曲线 (高宽比 1.5~1.8)
+      ctx.bezierCurveTo(-bw * 1.06, -bh * 1.38, bw * 1.06, -bh * 1.38, bw, 0);
+
+      // 下边缘：按阶段生成波浪花边 (Ripple Hem)
+      if (this.stage === 'baby') {
+        // 幼年体：4~6个细小柔和褶皱
+        const ripples = 5;
+        const step = (bw * 2) / ripples;
+        for (let i = ripples; i >= 0; i--) {
+          const rx = -bw + i * step;
+          const ry = Math.sin(i * Math.PI + this.pulsePhase * 1.5) * 1.5;
+          if (i === ripples) ctx.lineTo(rx, ry);
+          else ctx.quadraticCurveTo(rx + step / 2, ry + 2, rx, ry);
+        }
+      } else if (this.stage === 'teen') {
+        // 成长体：8~10个波浪荷叶边 (Lotus Leaf Edge)
+        const ripples = 8;
+        const step = (bw * 2) / ripples;
+        for (let i = ripples; i >= 0; i--) {
+          const rx = -bw + i * step;
+          const ry = Math.sin(i * Math.PI + this.pulsePhase * 2.0) * 3.2;
+          if (i === ripples) ctx.lineTo(rx, ry);
+          else ctx.quadraticCurveTo(rx + step / 2, ry + 4, rx, ry);
+        }
+      } else {
+        // 完全体：12~14个层叠双重花边
+        const ripples = 12;
+        const step = (bw * 2) / ripples;
+        for (let i = ripples; i >= 0; i--) {
+          const rx = -bw + i * step;
+          const ry = Math.sin(i * Math.PI + this.pulsePhase * 2.2) * 4.2;
+          if (i === ripples) ctx.lineTo(rx, ry);
+          else ctx.quadraticCurveTo(rx + step / 2, ry + 5, rx, ry);
+        }
+      }
       ctx.closePath();
 
-      // 伞帽渐变填充（温润透亮果冻质感）
-      const grad = ctx.createRadialGradient(0, -h * 0.4, 1, 0, -h * 0.2, w * 1.1);
-      grad.addColorStop(0, `rgba(${themeColor.r}, ${themeColor.g}, ${themeColor.b}, ${themeColor.alpha * 0.85})`);
-      grad.addColorStop(0.5, `rgba(${themeColor.r}, ${themeColor.g}, ${themeColor.b}, ${themeColor.alpha * 0.45})`);
-      grad.addColorStop(1, `rgba(${themeColor.r}, ${themeColor.g}, ${themeColor.b}, ${themeColor.alpha * 0.2})`);
-      ctx.fillStyle = grad;
+      // 多层透明渐变果冻质感填充
+      const bellGrad = ctx.createRadialGradient(0, -bh * 0.45, 1, 0, -bh * 0.2, bw * 1.18);
+      if (this.stage === 'baby') {
+        bellGrad.addColorStop(0, `rgba(${themeColor.r}, ${themeColor.g}, ${themeColor.b}, 0.85)`);
+        bellGrad.addColorStop(0.5, `rgba(${themeColor.r}, ${themeColor.g}, ${themeColor.b}, 0.42)`);
+        bellGrad.addColorStop(1, `rgba(${themeColor.r}, ${themeColor.g}, ${themeColor.b}, 0.15)`);
+      } else if (this.stage === 'teen') {
+        bellGrad.addColorStop(0, `rgba(235, 175, 255, 0.90)`);
+        bellGrad.addColorStop(0.5, `rgba(${themeColor.r}, ${themeColor.g}, ${themeColor.b}, 0.50)`);
+        bellGrad.addColorStop(1, `rgba(${themeColor.r}, ${themeColor.g}, ${themeColor.b}, 0.18)`);
+      } else {
+        bellGrad.addColorStop(0, `rgba(255, 230, 170, 0.95)`);
+        bellGrad.addColorStop(0.4, `rgba(240, 185, 255, 0.55)`);
+        bellGrad.addColorStop(1, `rgba(${themeColor.r}, ${themeColor.g}, ${themeColor.b}, 0.20)`);
+      }
+      ctx.fillStyle = bellGrad;
       ctx.fill();
 
-      // 高光微光轮廓
-      ctx.strokeStyle = `rgba(255, 255, 255, ${themeColor.alpha * 0.75})`;
+      // 顶部边缘晶莹高光线
+      ctx.strokeStyle = `rgba(255, 255, 255, 0.75)`;
       ctx.lineWidth = 1.2;
       ctx.stroke();
 
-      // 内部半透明发光核心（心脏）
-      ctx.beginPath();
-      ctx.arc(0, -h * 0.35, r * 0.26 * squishX, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255, 255, 255, ${themeColor.alpha * 0.7})`;
-      ctx.fill();
+      // 5. 内囊与生殖腺晶核 (Nucleus & Gonads)
+      if (this.stage === 'baby') {
+        // 幼年体：纯净小微光内囊
+        ctx.beginPath();
+        ctx.arc(0, -bh * 0.38, r * 0.28 * squishX, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.fill();
+      } else if (this.stage === 'teen') {
+        // 成长体：四叶草生殖腺 (Four-Leaf Clover Gonads)
+        const cloverR = r * 0.24 * squishX;
+        const cDist = r * 0.22;
+        ctx.fillStyle = 'rgba(255, 210, 245, 0.78)';
+        for (let a = 0; a < 4; a++) {
+          const ang = (a * Math.PI) / 2 + Math.PI / 4;
+          const cx = Math.cos(ang) * cDist;
+          const cy = -bh * 0.38 + Math.sin(ang) * cDist;
+          ctx.beginPath();
+          ctx.arc(cx, cy, cloverR, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      } else {
+        // 完全体：花瓣晶体多层发光晶核 (Crystal Core Glow)
+        const coreDist = r * 0.26;
+        ctx.fillStyle = 'rgba(255, 245, 210, 0.88)';
+        for (let a = 0; a < 4; a++) {
+          const ang = (a * Math.PI) / 2;
+          const cx = Math.cos(ang) * coreDist;
+          const cy = -bh * 0.38 + Math.sin(ang) * coreDist;
+          ctx.beginPath();
+          ctx.arc(cx, cy, r * 0.22 * squishX, 0, Math.PI * 2);
+          ctx.fill();
+        }
 
+        // 中心高亮能量光点
+        ctx.beginPath();
+        ctx.arc(0, -bh * 0.38, r * 0.18, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+      }
+
+      ctx.restore();
       ctx.restore();
     }
   }
 
-  // ==========================================
-  // 水母集群与食物管理
-  // ==========================================
-  let jellyfishes = [];
-  let currentCount = 4; // 每次刷新网站默认 4 只状态（最小初始体积）
+  // ============================================================================
+  // 7. 水母集群管理与全局初始化
+  // ============================================================================
+  const jellyfishes = [];
+  let currentCount = 4;
+
   try {
     const saved = localStorage.getItem('hub_jellyfish_count');
     if (saved !== null) {
-      const parsed = parseInt(saved, 10);
-      if (!isNaN(parsed) && parsed >= 0 && parsed <= 15) {
-        currentCount = parsed;
-      }
+      currentCount = Math.max(0, Math.min(15, parseInt(saved, 10) || 4));
     }
-  } catch (e) {}
+  } catch(e) {}
 
-  function setJellyfishCount(targetCount) {
-    targetCount = Math.max(0, Math.min(15, targetCount));
-    currentCount = targetCount;
-    localStorage.setItem('hub_jellyfish_count', currentCount);
-
-    while (jellyfishes.length < currentCount) {
-      jellyfishes.push(new Jellyfish());
+  // 初始化水母（出生在当前视口核心区域，随滚轮自然上下划走）
+  function initJellyfishes() {
+    jellyfishes.length = 0;
+    const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+    for (let i = 0; i < currentCount; i++) {
+      // 错开分布在当前屏幕 100px ~ 420px 之间，保证刷新出来一眼看到
+      const spawnX = (pageW * 0.15) + (i / Math.max(1, currentCount - 1)) * (pageW * 0.70) + (Math.random() - 0.5) * 60;
+      const spawnY = scrollY + 110 + (i * 75) + (Math.random() - 0.5) * 30;
+      jellyfishes.push(new Jellyfish(spawnX, spawnY));
     }
-    while (jellyfishes.length > currentCount) {
+  }
+
+  initJellyfishes();
+
+  // 数量步进器接口
+  function setJellyfishCount(newCount) {
+    newCount = Math.max(0, Math.min(15, newCount));
+    currentCount = newCount;
+    try {
+      localStorage.setItem('hub_jellyfish_count', newCount.toString());
+    } catch(e) {}
+
+    while (jellyfishes.length < newCount) {
+      const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+      const spawnY = scrollY + 100 + Math.random() * (window.innerHeight - 200);
+      jellyfishes.push(new Jellyfish(Math.random() * pageW, spawnY));
+    }
+    while (jellyfishes.length > newCount) {
       jellyfishes.pop();
     }
 
     const countDisplay = document.getElementById('jellyfishCountDisplay');
     if (countDisplay) {
-      countDisplay.textContent = `${currentCount} 只`;
+      countDisplay.textContent = `${newCount} 只`;
     }
   }
 
-  setJellyfishCount(currentCount);
+  // ============================================================================
+  // 8. 全局用户交互监听 (点击受惊 / 投喂 / 长按)
+  // ============================================================================
+  window.addEventListener('mousedown', (e) => {
+    // 忽略在弹窗或按钮上的点击
+    if (e.target.closest('.chatflow-modal-overlay, button, input, a, .work-detail-view')) return;
 
-  // 主渲染循环
-  function animate() {
-    ctx.clearRect(0, 0, width, height);
-    const themeColor = getThemeColor();
+    const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+    mouse.x = e.clientX;
+    mouse.y = e.clientY + scrollY; // 映射至网页绝对坐标
+    mouse.isDown = true;
+    mouse.downStartTime = performance.now();
+    mouse.downX = mouse.x;
+    mouse.downY = mouse.y;
+  });
 
-    // 1. 绘制食物（投喂小金豆粒子）
-    for (let i = foods.length - 1; i >= 0; i--) {
-      const f = foods[i];
-      f.y += f.vy;
-      f.x += f.vx;
-      f.sparkle += 0.08;
+  window.addEventListener('mousemove', (e) => {
+    const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+    mouse.x = e.clientX;
+    mouse.y = e.clientY + scrollY;
+  });
 
-      // 闪烁微光食物粒子
-      const glow = (Math.sin(f.sparkle) + 1) / 2 * 0.4 + 0.6;
-      ctx.beginPath();
-      ctx.arc(f.x, f.y, f.radius, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255, 215, 100, ${glow * 0.9})`;
-      ctx.fill();
-      ctx.strokeStyle = `rgba(255, 255, 255, ${glow})`;
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
+  window.addEventListener('mouseup', (e) => {
+    if (!mouse.isDown) return;
+    mouse.isDown = false;
+    const pressDuration = performance.now() - mouse.downStartTime;
+    const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+    const upX = e.clientX;
+    const upY = e.clientY + scrollY;
 
-      // 食物触底或过慢消散
-      if (f.y > height + 20) {
-        foods.splice(i, 1);
+    // A. 判定是否精准点击在某只水母身上 -> 触发点触受惊 (Scared Flee)
+    let clickedJelly = false;
+    for (const j of jellyfishes) {
+      const dist = Math.hypot(upX - j.x, upY - j.y);
+      if (dist < j.radius * 2.0) {
+        j.scaredTimer = 40; // 持续约 0.6s
+        j.scaredAngle = Math.atan2(j.y - upY, j.x - upX);
+        j.vx += Math.cos(j.scaredAngle) * 3.2;
+        j.vy += Math.sin(j.scaredAngle) * 3.2;
+        spawnBubble(j.x, j.y, 4, true);
+        clickedJelly = true;
+        break;
       }
     }
 
-    // 2. 绘制水母
-    jellyfishes.forEach(j => {
-      j.update();
-      j.draw(themeColor);
-    });
-
-    // 3. 绘制升腾小气泡
-    for (let i = bubbles.length - 1; i >= 0; i--) {
-      const b = bubbles[i];
-      b.x += b.vx;
-      b.y += b.vy;
-      b.life -= 0.012;
-
-      ctx.beginPath();
-      ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255, 255, 255, ${b.alpha * b.life})`;
-      ctx.fill();
-      ctx.strokeStyle = `rgba(${themeColor.r}, ${themeColor.g}, ${themeColor.b}, ${b.alpha * b.life * 0.7})`;
-      ctx.lineWidth = 0.8;
-      ctx.stroke();
-
-      if (b.life <= 0) {
-        bubbles.splice(i, 1);
+    // B. 若未点击在水母上且为短按 -> 投喂浮游食物
+    if (!clickedJelly && pressDuration < 320) {
+      if (!e.target.closest('.chatflow-modal-overlay, button, input, a, .work-detail-view, .work-card')) {
+        spawnFood(upX, upY);
       }
     }
+  });
 
-    requestAnimationFrame(animate);
-  }
-
-  requestAnimationFrame(animate);
-
-  // 绑定外观设置弹窗控制按钮
-  window.addEventListener('DOMContentLoaded', () => {
+  // 绑定外观设置中的步进器
+  document.addEventListener('DOMContentLoaded', () => {
     const decBtn = document.getElementById('jellyfishDecBtn');
     const incBtn = document.getElementById('jellyfishIncBtn');
     const countDisplay = document.getElementById('jellyfishCountDisplay');
@@ -529,19 +719,92 @@
     }
 
     if (decBtn) {
-      decBtn.addEventListener('click', e => {
+      decBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         setJellyfishCount(Math.max(0, jellyfishes.length - 1));
       });
     }
 
     if (incBtn) {
-      incBtn.addEventListener('click', e => {
+      incBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         setJellyfishCount(Math.min(15, jellyfishes.length + 1));
       });
     }
   });
 
+  // ============================================================================
+  // 9. 主动画循环 (Main Render Loop - 60 FPS)
+  // ============================================================================
+  function animate() {
+    ctx.clearRect(0, 0, pageW, pageH);
+    const themeColor = getThemeColor();
+
+    // 1. 渲染气泡
+    for (let i = bubbles.length - 1; i >= 0; i--) {
+      const b = bubbles[i];
+      b.x += b.vx;
+      b.y += b.vy;
+      b.alpha -= 0.008;
+
+      if (b.alpha <= 0) {
+        bubbles.splice(i, 1);
+        continue;
+      }
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 255, 255, ${b.alpha * 0.75})`;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // 2. 渲染食物粒（小金豆）
+    for (let i = foods.length - 1; i >= 0; i--) {
+      const f = foods[i];
+      f.y += f.vy;
+      f.x += f.vx;
+      f.glowPhase += 0.05;
+      f.life -= f.decay;
+
+      if (f.life <= 0 || f.y > pageH) {
+        foods.splice(i, 1);
+        continue;
+      }
+
+      ctx.save();
+      const glowScale = 1.0 + Math.sin(f.glowPhase) * 0.35;
+      // 外光晕
+      const fGlow = ctx.createRadialGradient(f.x, f.y, 1, f.x, f.y, f.radius * 2.8 * glowScale);
+      fGlow.addColorStop(0, 'rgba(255, 215, 120, 0.95)');
+      fGlow.addColorStop(1, 'rgba(255, 180, 50, 0)');
+      ctx.fillStyle = fGlow;
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, f.radius * 2.8 * glowScale, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 核心金粒
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, f.radius * 0.85, 0, Math.PI * 2);
+      ctx.fillStyle = '#fff8e7';
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // 3. 渲染所有水母实体
+    for (const j of jellyfishes) {
+      j.update(jellyfishes);
+      j.draw(themeColor);
+    }
+
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+
+  // 暴露调试句柄
+  window.jellyfishesRef = jellyfishes;
+  window.foodsRef = foods;
   window.setJellyfishCount = setJellyfishCount;
 })();

@@ -292,44 +292,52 @@
       if (this.y < -70) this.y = height + 70;
       if (this.y > height + 70) this.y = -70;
 
-      // 5. 重点：伞帽底沿与触手的精密无缝衔接
-      // 伞帽底部中心点
+      // 5. 重点：伞帽底沿与触手的精密无缝外扩衔接（顺应伞盖弧度向外扇形扩展，彻底消除内聚缠绕）
       const r = this.radius;
-      const baseCenterDistance = r * 0.15;
+      const baseCenterDistance = r * 0.12;
       const bellBottomX = this.x - Math.cos(this.angle) * baseCenterDistance;
       const bellBottomY = this.y - Math.sin(this.angle) * baseCenterDistance;
 
       // 触手横向排列轴垂直于游动方向
       const perpAngle = this.angle + Math.PI / 2;
+      const tailDirX = -Math.cos(this.angle);
+      const tailDirY = -Math.sin(this.angle);
 
       this.tentacles.forEach((tentacle, tIdx) => {
-        // 沿伞帽下沿弧线均布根部
-        const spreadOffset = (tIdx - (this.tentacleCount - 1) / 2) * (r * 0.38);
+        // 沿伞帽圆弧边缘等分，并自然向外侧弧度外扩（扇形发散）
+        const normIdx = (tIdx - (this.tentacleCount - 1) / 2); // 负数在左侧，正数在右侧
+        const spreadOffset = normIdx * (r * 0.42); // 根部间距自然拉开
+
+        // 根部起始点顺着伞盖圆弧边缘外扩贴合
         const rootX = bellBottomX + Math.cos(perpAngle) * spreadOffset;
         const rootY = bellBottomY + Math.sin(perpAngle) * spreadOffset;
 
-        // 根部 100% 锁死在伞帽底边缘，消除缝隙！
+        // 根部 100% 锁死在伞帽底边缘
         tentacle[0].x = rootX;
         tentacle[0].y = rootY;
 
-        // 柔性触手物理摆动（摆线物理模拟，自然柔美）
+        // 核心外扩角度：顺着伞盖边缘切线往外自然散开，外侧触角外扩倾斜角更大（扇形散开约 18°~28°）
+        const splayAngle = perpAngle + (normIdx > 0 ? 0 : Math.PI); // 向外的侧向分量
+        const splayPower = Math.abs(normIdx) * 0.35; // 外扩力度
+
         const segDist = (r * 0.32);
-        // 核心动力学：触角必须严格顺着水母身体的朝向自然拖曳向后方！
-        // 当水母倒着游（头向下）时，后方就是上方；当头向上时，后方就是下方
-        const tailDirX = -Math.cos(this.angle);
-        const tailDirY = -Math.sin(this.angle);
 
         for (let j = 1; j < tentacle.length; j++) {
           const seg = tentacle[j];
           const prev = tentacle[j - 1];
 
-          // 1. 身体朝向对齐力：引导触角顺应头部下方（尾向）舒展，绝不折向重力方向！
-          const naturalTargetX = prev.x + tailDirX * segDist;
-          const naturalTargetY = prev.y + tailDirY * segDist;
-          seg.x += (naturalTargetX - seg.x) * 0.18;
-          seg.y += (naturalTargetY - seg.y) * 0.18;
+          // 1. 顺应身体尾部舒展 + 根部向外自然扇形扩散
+          // 靠近根部时外扩力更强，顺应伞盖弧度向外撑开；越往尾梢逐渐收拢随流下垂
+          const splayDecay = Math.max(0, 1 - j * 0.16);
+          const outwardX = Math.cos(perpAngle) * (normIdx * splayPower * splayDecay * segDist * 0.6);
+          const outwardY = Math.sin(perpAngle) * (normIdx * splayPower * splayDecay * segDist * 0.6);
 
-          // 2. 经典绳索间距约束 (Verlet distance constraint)
+          const naturalTargetX = prev.x + tailDirX * segDist + outwardX;
+          const naturalTargetY = prev.y + tailDirY * segDist + outwardY;
+          seg.x += (naturalTargetX - seg.x) * 0.22;
+          seg.y += (naturalTargetY - seg.y) * 0.22;
+
+          // 2. 绳索间距约束 (Verlet distance constraint)
           const dx = seg.x - prev.x;
           const dy = seg.y - prev.y;
           const curDist = Math.sqrt(dx * dx + dy * dy) || 1;
@@ -337,10 +345,10 @@
           seg.x -= dx * stretch * 0.5;
           seg.y -= dy * stretch * 0.5;
 
-          // 3. 经典真实的波浪形触手 (Sine Wave Tentacles)
-          // 触手横向高频波浪起伏，自然随水流律动
-          const wavePhase = this.pulsePhase * 1.8 + j * 0.75 + tIdx * 1.1;
-          const waveAmp = (0.8 + j * 0.28); // 越往触手尾部波浪幅度越开阔自然
+          // 3. 独立多相位正弦波浪（波浪沿自身扇形发散方向起伏，消除螺旋重叠！）
+          // 每根触手拥有独立初始相位错开，避免不同触手在同一点交叉缠绕
+          const wavePhase = this.pulsePhase * 1.8 + j * 0.75 + tIdx * 1.5;
+          const waveAmp = (0.7 + j * 0.26); // 根部小波浪，末端柔和飘摆
           const waveOffset = Math.sin(wavePhase) * waveAmp;
           seg.x += Math.cos(perpAngle) * waveOffset - (this.vx * 0.35);
           seg.y += Math.sin(perpAngle) * waveOffset - (this.vy * 0.35);

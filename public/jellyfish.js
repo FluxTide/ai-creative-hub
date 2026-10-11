@@ -22,6 +22,9 @@
       document.body.scrollHeight,
       window.innerHeight
     );
+    if (typeof window.updateSeaweedSeabedY === 'function') {
+      window.updateSeaweedSeabedY(pageH);
+    }
   }
 
   window.addEventListener('resize', updateCanvasDimensions);
@@ -816,6 +819,11 @@
       ctx.fillStyle = '#fff8e7';
       ctx.fill();
       ctx.restore();
+    }
+
+    // 2.5 渲染底部水草生态带 (Seaweed Seabed Layer)
+    if (typeof window.updateAndDrawSeaweeds === 'function') {
+      window.updateAndDrawSeaweeds(ctx, pageW, pageH, themeColor, jellyfishes);
     }
 
     // 3. 渲染所有水母实体

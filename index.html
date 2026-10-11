@@ -6,7 +6,7 @@
   <title>水母的探索日记 · AI 创作资源库</title>
   <meta name="description" content="到处乱逛，顺便捡点有意思的东西 🪼 设计｜科技｜AI｜奇奇怪怪的小玩意">
   <link rel="icon" href="assets/avatar.png">
-  <link rel="stylesheet" href="style.css?v=20261011_14">
+  <link rel="stylesheet" href="style.css?v=20261011_17">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -52,6 +52,11 @@
               </svg>
               前往小红书主页
             </a>
+            <button id="themeTriggerBtn" class="theme-trigger-btn" title="外观设置">
+              <span id="themeTriggerDot" class="theme-trigger-dot" style="background: #8B7355;"></span>
+              <span id="themeTriggerLabel">云上舞白</span>
+              <span style="font-size: 12px; opacity: 0.7;">⚙️</span>
+            </button>
             <div class="stats-pill">
               <span class="dot"></span> 持续收录完整提示词 & 工作流
             </div>
@@ -117,10 +122,44 @@
     </div>
   </div>
 
+  <!-- ChatFlow 外观设置弹窗 (1:1 像素级还原) -->
+  <div id="themeModalOverlay" class="chatflow-modal-overlay">
+    <div class="chatflow-dialog">
+      <!-- Header -->
+      <div class="chatflow-dialog-header">
+        <h3 class="chatflow-dialog-title">外观设置</h3>
+        <button id="themeModalCloseBtn" class="chatflow-close-btn" aria-label="关闭">✕</button>
+      </div>
+
+      <!-- Mode Toggle Segmented Control (Pill Switcher) -->
+      <div>
+        <div class="chatflow-pill-container">
+          <button id="modeLightBtn" class="chatflow-pill-btn" data-mode="light">
+            <span style="font-size: 14px;">☀️</span>
+            <span>浅色</span>
+          </button>
+          <button id="modeDarkBtn" class="chatflow-pill-btn" data-mode="dark">
+            <span style="font-size: 14px;">🌙</span>
+            <span>深色</span>
+          </button>
+          <button id="modeSystemBtn" class="chatflow-pill-btn" data-mode="system">
+            <span style="font-size: 14px;">💻</span>
+            <span>跟随系统</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 7大色调网格 -->
+      <div id="chatflowThemesGrid" class="chatflow-themes-grid">
+        <!-- 动态通过 JS 渲染 7 张主题卡片 -->
+      </div>
+    </div>
+  </div>
+
   <!-- Toast 提示条 -->
   <div class="toast" id="toast">复制成功！</div>
 
-  <script src="data.js?v=20261011_14"></script>
-  <script src="app.js?v=20261011_14"></script>
+  <script src="data.js?v=20261011_17"></script>
+  <script src="app.js?v=20261011_17"></script>
 </body>
 </html>

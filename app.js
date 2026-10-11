@@ -383,4 +383,186 @@ document.addEventListener('DOMContentLoaded', () => {
   // 初始化
   updateCounts();
   renderCards();
+  initChatflowThemeEvents();
 });
+
+/* ================= ChatFlow 7大色调外观系统逻辑 ================= */
+const CHATFLOW_THEMES = [
+  {
+    id: 'cloud-dancer',
+    name: '云上舞白',
+    codeLabel: 'Pantone 2026 年度色',
+    dotColor: '#8B7355',
+    previewBg: '#F0EEE9',
+    badgeBg: '#8B7355'
+  },
+  {
+    id: 'blossom-dream',
+    name: '繁花如梦',
+    codeLabel: '晨曦花境 · 夜阑幽梦',
+    dotColor: '#D4849A',
+    previewBg: 'linear-gradient(135deg, #FAF4F8 0%, #F5EDF2 100%)',
+    badgeBg: 'linear-gradient(135deg, #E8A8BC 0%, #C46D88 100%)'
+  },
+  {
+    id: 'corundum-blue',
+    name: '刚玉蓝',
+    codeLabel: 'RAL 220 40 10',
+    dotColor: '#4A6670',
+    previewBg: '#E8EEF0',
+    badgeBg: '#4A6670'
+  },
+  {
+    id: 'kiwi-green',
+    name: '冰猕猴桃汁绿',
+    codeLabel: 'RAL 120 90 20',
+    dotColor: '#7A9A5C',
+    previewBg: '#E8F0E4',
+    badgeBg: '#7A9A5C'
+  },
+  {
+    id: 'spicy-red',
+    name: '辛辣红',
+    codeLabel: 'RAL 030 40 40',
+    dotColor: '#8B4049',
+    previewBg: '#F0E8E8',
+    badgeBg: '#8B4049'
+  },
+  {
+    id: 'teal-water',
+    name: '明水鸭色',
+    codeLabel: 'RAL 180 80 10',
+    dotColor: '#5A8A8A',
+    previewBg: '#E4F0F0',
+    badgeBg: '#5A8A8A'
+  },
+  {
+    id: 'geist',
+    name: 'Geist',
+    codeLabel: 'Vercel · 极简黑白',
+    dotColor: '#000000',
+    previewBg: '#FFFFFF',
+    badgeBg: '#000000'
+  }
+];
+
+let currentThemeId = localStorage.getItem('cf_theme_id') || 'cloud-dancer';
+let currentThemeMode = localStorage.getItem('cf_theme_mode') || 'system';
+
+function applyChatflowThemeDOM() {
+  const root = document.documentElement;
+  root.setAttribute('data-theme', currentThemeId);
+
+  let effectiveMode = currentThemeMode;
+  if (effectiveMode === 'system') {
+    effectiveMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  root.setAttribute('data-mode', effectiveMode);
+
+  // 更新触发器按钮展示
+  const foundTheme = CHATFLOW_THEMES.find(t => t.id === currentThemeId) || CHATFLOW_THEMES[0];
+  const triggerDot = document.getElementById('themeTriggerDot');
+  const triggerLabel = document.getElementById('themeTriggerLabel');
+  if (triggerDot) triggerDot.style.background = foundTheme.dotColor;
+  if (triggerLabel) triggerLabel.textContent = foundTheme.name;
+
+  // 更新弹窗内部状态
+  updateThemeModalUI();
+}
+
+function updateThemeModalUI() {
+  // 模式按钮激活态
+  ['light', 'dark', 'system'].forEach(m => {
+    const btn = document.getElementById(`mode${m.charAt(0).toUpperCase() + m.slice(1)}Btn`);
+    if (btn) {
+      if (currentThemeMode === m) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    }
+  });
+
+  // 渲染主题卡片网格
+  const grid = document.getElementById('chatflowThemesGrid');
+  if (!grid) return;
+
+  grid.innerHTML = CHATFLOW_THEMES.map(t => {
+    const isActive = t.id === currentThemeId;
+    return `
+      <div class="chatflow-theme-card ${isActive ? 'active' : ''}" 
+           data-theme-id="${t.id}"
+           style="background: ${t.previewBg};">
+        ${isActive ? '<div class="chatflow-check-badge">✓</div>' : ''}
+        <div style="padding-right: 18px;">
+          <div style="font-size: 12px; font-weight: 700; color: #2D2D2D; line-height: 1.2;">${t.name}</div>
+          <div style="font-size: 9.5px; color: #787878; margin-top: 3px; line-height: 1.2;">${t.codeLabel}</div>
+        </div>
+        <div class="chatflow-color-dot" style="background: ${t.dotColor};"></div>
+      </div>
+    `;
+  }).join('');
+
+  // 绑定卡片点击
+  grid.querySelectorAll('.chatflow-theme-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const tid = card.getAttribute('data-theme-id');
+      currentThemeId = tid;
+      localStorage.setItem('cf_theme_id', tid);
+      applyChatflowThemeDOM();
+      const themeObj = CHATFLOW_THEMES.find(t => t.id === tid);
+      showToast(`已切换至「${themeObj ? themeObj.name : tid}」色调`);
+    });
+  });
+}
+
+function initChatflowThemeEvents() {
+  // 监听系统色彩偏好变化
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if (currentThemeMode === 'system') {
+      applyChatflowThemeDOM();
+    }
+  });
+
+  const modalOverlay = document.getElementById('themeModalOverlay');
+  const triggerBtn = document.getElementById('themeTriggerBtn');
+  const closeBtn = document.getElementById('themeModalCloseBtn');
+
+  if (triggerBtn && modalOverlay) {
+    triggerBtn.addEventListener('click', () => {
+      modalOverlay.classList.add('active');
+      updateThemeModalUI();
+    });
+  }
+
+  if (closeBtn && modalOverlay) {
+    closeBtn.addEventListener('click', () => {
+      modalOverlay.classList.remove('active');
+    });
+  }
+
+  if (modalOverlay) {
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) {
+        modalOverlay.classList.remove('active');
+      }
+    });
+  }
+
+  // 模式切换按钮
+  ['light', 'dark', 'system'].forEach(m => {
+    const btn = document.getElementById(`mode${m.charAt(0).toUpperCase() + m.slice(1)}Btn`);
+    if (btn) {
+      btn.addEventListener('click', () => {
+        currentThemeMode = m;
+        localStorage.setItem('cf_theme_mode', m);
+        applyChatflowThemeDOM();
+        const modeLabels = { light: '浅色模式', dark: '深色模式', system: '跟随系统' };
+        showToast(`已切换为${modeLabels[m]}`);
+      });
+    }
+  });
+
+  // 初始应用
+  applyChatflowThemeDOM();
+}

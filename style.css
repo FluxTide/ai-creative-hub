@@ -1,10 +1,145 @@
+/* ================= CHATFLOW 7 THEMES ================= */
+/* 1. 云上舞白 (Pantone 2026 年度色 · cloud-dancer) */
+    html[data-theme="cloud-dancer"][data-mode="light"], html[data-theme="cloud-dancer"]:not([data-mode]) {
+      --primary: #8B7355; --accent: #8B7355; --accent-soft: rgba(139, 115, 85, 0.12);
+      --bg: #F0EEE9; --surface: #FFFFFF; --surface-elevated: #FAFAF7; --surface-hover: #E8E6E1;
+      --card-bg: rgba(255, 255, 255, 0.75); --border: rgba(0, 0, 0, 0.08); --border-subtle: rgba(0, 0, 0, 0.04);
+      --text-primary: #3D3D3D; --text-secondary: #666666; --text-muted: #999999;
+    }
+    html[data-theme="cloud-dancer"][data-mode="dark"] {
+      --primary: #C9A86C; --accent: #C9A86C; --accent-soft: rgba(201, 168, 108, 0.15);
+      --bg: #1A1816; --surface: #24211E; --surface-elevated: #2E2A27; --surface-hover: #383430;
+      --card-bg: #24211E; --border: #3A3530; --border-subtle: #2C2825;
+      --text-primary: #F0EEE9; --text-secondary: #A8A29A; --text-muted: #78736B;
+    }
+
+    /* 2. 繁花如梦 (晨曦花境 · 夜阑幽梦 · blossom-dream) */
+    html[data-theme="blossom-dream"][data-mode="light"], html[data-theme="blossom-dream"]:not([data-mode]) {
+      --primary: #D4849A; --accent: #D4849A; --accent-soft: rgba(212, 132, 154, 0.12);
+      --bg: #F5EDF2; --surface: #FFFFFF; --surface-elevated: #FAF4F8; --surface-hover: #EFE4EC;
+      --card-bg: rgba(255, 255, 255, 0.75); --border: rgba(0, 0, 0, 0.08); --border-subtle: rgba(0, 0, 0, 0.04);
+      --text-primary: #1E1A22; --text-secondary: #6B5E68; --text-muted: #9C8B97;
+    }
+    html[data-theme="blossom-dream"][data-mode="dark"] {
+      --primary: #D19EBB; --accent: #D19EBB; --accent-soft: rgba(209, 158, 187, 0.15);
+      --bg: #151316; --surface: #1E1A20; --surface-elevated: #28232A; --surface-hover: #332D36;
+      --card-bg: #1E1A20; --border: #362E38; --border-subtle: #29232B;
+      --text-primary: #F0EAF4; --text-secondary: #A89CAE; --text-muted: #786C7D;
+    }
+
+    /* 3. 刚玉蓝 (RAL 220 40 10 · corundum-blue) */
+    html[data-theme="corundum-blue"][data-mode="light"], html[data-theme="corundum-blue"]:not([data-mode]) {
+      --primary: #4A6670; --accent: #4A6670; --accent-soft: rgba(74, 102, 112, 0.12);
+      --bg: #E8EEF0; --surface: #FFFFFF; --surface-elevated: #F8FAFB; --surface-hover: #DDE5E8;
+      --card-bg: rgba(255, 255, 255, 0.75); --border: rgba(0, 0, 0, 0.08); --border-subtle: rgba(0, 0, 0, 0.04);
+      --text-primary: #3D3D3D; --text-secondary: #5A6D74; --text-muted: #8B9EA5;
+    }
+    html[data-theme="corundum-blue"][data-mode="dark"] {
+      --primary: #6A9AAA; --accent: #6A9AAA; --accent-soft: rgba(106, 154, 170, 0.15);
+      --bg: #141A1C; --surface: #1C2428; --surface-elevated: #242F34; --surface-hover: #2D3A40;
+      --card-bg: #1C2428; --border: #2E3C42; --border-subtle: #222E33;
+      --text-primary: #E8EEF0; --text-secondary: #97A9B0; --text-muted: #6B7C82;
+    }
+
+    /* 4. 冰猕猴桃汁绿 (RAL 120 90 20 · kiwi-green) */
+    html[data-theme="kiwi-green"][data-mode="light"], html[data-theme="kiwi-green"]:not([data-mode]) {
+      --primary: #7A9A5C; --accent: #7A9A5C; --accent-soft: rgba(122, 154, 92, 0.12);
+      --bg: #E8F0E4; --surface: #FFFFFF; --surface-elevated: #F8FAF6; --surface-hover: #DDE8D7;
+      --card-bg: rgba(255, 255, 255, 0.75); --border: rgba(0, 0, 0, 0.08); --border-subtle: rgba(0, 0, 0, 0.04);
+      --text-primary: #3D3D3D; --text-secondary: #5C6E4D; --text-muted: #8E9E80;
+    }
+    html[data-theme="kiwi-green"][data-mode="dark"] {
+      --primary: #9ABA7C; --accent: #9ABA7C; --accent-soft: rgba(154, 186, 124, 0.15);
+      --bg: #161A14; --surface: #1F241C; --surface-elevated: #283024; --surface-hover: #323C2D;
+      --card-bg: #1F241C; --border: #323E2E; --border-subtle: #242E20;
+      --text-primary: #E8F0E4; --text-secondary: #A0B096; --text-muted: #728268;
+    }
+
+    /* 5. 辛辣红 (RAL 030 40 40 · spicy-red) */
+    html[data-theme="spicy-red"][data-mode="light"], html[data-theme="spicy-red"]:not([data-mode]) {
+      --primary: #8B4049; --accent: #8B4049; --accent-soft: rgba(139, 64, 73, 0.12);
+      --bg: #F0E8E8; --surface: #FFFFFF; --surface-elevated: #FAF6F6; --surface-hover: #E7DDDD;
+      --card-bg: rgba(255, 255, 255, 0.75); --border: rgba(0, 0, 0, 0.08); --border-subtle: rgba(0, 0, 0, 0.04);
+      --text-primary: #3D3D3D; --text-secondary: #745255; --text-muted: #A18184;
+    }
+    html[data-theme="spicy-red"][data-mode="dark"] {
+      --primary: #C06068; --accent: #C06068; --accent-soft: rgba(192, 96, 104, 0.15);
+      --bg: #1A1416; --surface: #241A1D; --surface-elevated: #302226; --surface-hover: #3C2B30;
+      --card-bg: #241A1D; --border: #3E2B30; --border-subtle: #2D1F23;
+      --text-primary: #F0E8E8; --text-secondary: #B0989B; --text-muted: #80686B;
+    }
+
+    /* 6. 明水鸭色 (RAL 180 80 10 · teal-water) */
+    html[data-theme="teal-water"][data-mode="light"], html[data-theme="teal-water"]:not([data-mode]) {
+      --primary: #5A8A8A; --accent: #5A8A8A; --accent-soft: rgba(90, 138, 138, 0.12);
+      --bg: #E4F0F0; --surface: #FFFFFF; --surface-elevated: #F5FAFA; --surface-hover: #D7E8E8;
+      --card-bg: rgba(255, 255, 255, 0.75); --border: rgba(0, 0, 0, 0.08); --border-subtle: rgba(0, 0, 0, 0.04);
+      --text-primary: #3D3D3D; --text-secondary: #4D6D6D; --text-muted: #7E9D9D;
+    }
+    html[data-theme="teal-water"][data-mode="dark"] {
+      --primary: #7ABAAA; --accent: #7ABAAA; --accent-soft: rgba(122, 186, 170, 0.15);
+      --bg: #121A1A; --surface: #192424; --surface-elevated: #213030; --surface-hover: #2A3C3C;
+      --card-bg: #192424; --border: #2A3C3C; --border-subtle: #1E2C2C;
+      --text-primary: #E4F0F0; --text-secondary: #94B4B4; --text-muted: #668484;
+    }
+
+    /* 7. Geist (Vercel · 极简黑白 · geist) */
+    html[data-theme="geist"][data-mode="light"], html[data-theme="geist"]:not([data-mode]) {
+      --primary: #444444; --accent: #444444; --accent-soft: rgba(0, 0, 0, 0.08);
+      --bg: #FFFFFF; --surface: #FAFAFA; --surface-elevated: #F5F5F5; --surface-hover: #EEEEEE;
+      --card-bg: #FFFFFF; --border: #E5E5E5; --border-subtle: #F0F0F0;
+      --text-primary: #111111; --text-secondary: #555555; --text-muted: #888888;
+    }
+    html[data-theme="geist"][data-mode="dark"] {
+      --primary: #EDEDED; --accent: #EDEDED; --accent-soft: rgba(255, 255, 255, 0.15);
+      --bg: #1A1A1A; --surface: #222222; --surface-elevated: #2A2A2A; --surface-hover: #333333;
+      --card-bg: #222222; --border: #333333; --border-subtle: #282828;
+      --text-primary: #EDEDED; --text-secondary: #A1A1A1; --text-muted: #707070;
+    }
+
+/* ==========================================================================
+   ChatFlow Design System Bridge
+   ========================================================================== */
+html[data-theme] {
+  --bg-main: var(--bg);
+  --bg-primary: var(--bg);
+  --bg-surface: var(--surface);
+  --bg-surface-elevated: var(--surface-elevated);
+  --bg-surface-hover: var(--surface-hover);
+  --bg-card: var(--card-bg, var(--surface));
+  --bg-card-hover: var(--surface-hover);
+  --border-subtle: var(--border);
+  --border-medium: var(--border);
+  --border-hover: var(--accent);
+  --border-focus: var(--accent);
+  --accent-color: var(--accent);
+  --accent-soft: var(--accent-soft);
+  --text-primary: var(--text-primary);
+  --text-secondary: var(--text-secondary);
+  --text-muted: var(--text-muted);
+}
+
+html[data-mode="dark"] .work-detail-view,
+html[data-mode="light"] .work-detail-view {
+  background: var(--bg-main) !important;
+}
+
+html[data-mode="light"] .work-card {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+html[data-mode="dark"] .work-card {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+
 :root {
-  --bg-main: #0c0d12;
-  --bg-card: rgba(22, 24, 34, 0.75);
-  --bg-card-hover: rgba(30, 33, 48, 0.9);
-  --bg-surface: rgba(255, 255, 255, 0.04);
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-hover: rgba(217, 212, 229, 0.35);
+  --bg-main: var(--bg-base, #0c0d12);
+  --bg-card: var(--card-bg, rgba(22, 24, 34, 0.75));
+  --bg-card-hover: var(--surface-hover, rgba(30, 33, 48, 0.9));
+  --bg-surface: var(--surface, rgba(255, 255, 255, 0.04));
+  --border-subtle: var(--border, rgba(255, 255, 255, 0.08));
+  --border-hover: var(--accent-subtle, rgba(217, 212, 229, 0.35));
   
   /* 莫兰迪蓝紫色系规范 */
   --morandi-purple: #D9D4E5;   /* 雾霭紫 */
@@ -14,9 +149,9 @@
   --morandi-pink: #C9B4B8;     /* 灰粉 */
   --morandi-dark: #666779;     /* 深灰紫 */
 
-  --text-primary: #f5f5f7;
-  --text-secondary: #9da3b4;
-  --text-muted: #6b7280;
+  --text-primary: var(--text-primary, #f5f5f7);
+  --text-secondary: var(--text-secondary, #9da3b4);
+  --text-muted: var(--text-muted, #6b7280);
   
   --radius-sm: 8px;
   --radius-md: 14px;
@@ -1043,4 +1178,354 @@ body {
   .detail-drawer.active .drawer-panel {
     transform: translateY(0);
   }
+}
+
+
+
+/* ================= ChatFlow 7大色调主题系统 (支持 浅色 / 深色 / 跟随系统) ================= */
+
+/* 1. 云上舞白 (Pantone 2026 年度色 · cloud-dancer) */
+html[data-theme="cloud-dancer"][data-mode="light"], html[data-theme="cloud-dancer"]:not([data-mode]) {
+  --primary: #8B7355; --accent: #8B7355; --accent-soft: rgba(139, 115, 85, 0.12);
+  --bg-primary: #F0EEE9; --bg-surface: #FFFFFF; --bg-surface-elevated: #FAFAF7; --bg-surface-hover: #E8E6E1;
+  --bg-card: rgba(255, 255, 255, 0.85); --bg-card-hover: rgba(255, 255, 255, 0.98);
+  --border-subtle: rgba(0, 0, 0, 0.08); --border-hover: #8B7355;
+  --text-primary: #3D3D3D; --text-secondary: #666666; --text-muted: #999999;
+  --morandi-purple: #8B7355; --morandi-blue: #706050;
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.05); --shadow-hover: 0 8px 30px rgba(139, 115, 85, 0.15);
+}
+html[data-theme="cloud-dancer"][data-mode="dark"] {
+  --primary: #C9A86C; --accent: #C9A86C; --accent-soft: rgba(201, 168, 108, 0.15);
+  --bg-primary: #1A1816; --bg-surface: #24211E; --bg-surface-elevated: #2E2A27; --bg-surface-hover: #383430;
+  --bg-card: rgba(36, 33, 30, 0.85); --bg-card-hover: rgba(46, 42, 39, 0.95);
+  --border-subtle: #3A3530; --border-hover: #C9A86C;
+  --text-primary: #F0EEE9; --text-secondary: #A8A29A; --text-muted: #78736B;
+  --morandi-purple: #C9A86C; --morandi-blue: #B8A88E;
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3); --shadow-hover: 0 8px 30px rgba(201, 168, 108, 0.2);
+}
+
+/* 2. 繁花如梦 (晨曦花境 · 夜阑幽梦 · blossom-dream) */
+html[data-theme="blossom-dream"][data-mode="light"], html[data-theme="blossom-dream"]:not([data-mode]) {
+  --primary: #D4849A; --accent: #D4849A; --accent-soft: rgba(212, 132, 154, 0.12);
+  --bg-primary: #F5EDF2; --bg-surface: #FFFFFF; --bg-surface-elevated: #FAF4F8; --bg-surface-hover: #EFE4EC;
+  --bg-card: rgba(255, 255, 255, 0.85); --bg-card-hover: rgba(255, 255, 255, 0.98);
+  --border-subtle: rgba(0, 0, 0, 0.08); --border-hover: #D4849A;
+  --text-primary: #1E1A22; --text-secondary: #6B5E68; --text-muted: #9C8B97;
+  --morandi-purple: #D4849A; --morandi-blue: #A27685;
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.05); --shadow-hover: 0 8px 30px rgba(212, 132, 154, 0.15);
+}
+html[data-theme="blossom-dream"][data-mode="dark"] {
+  --primary: #D19EBB; --accent: #D19EBB; --accent-soft: rgba(209, 158, 187, 0.15);
+  --bg-primary: #151316; --bg-surface: #1E1A20; --bg-surface-elevated: #28232A; --bg-surface-hover: #332D36;
+  --bg-card: rgba(30, 26, 32, 0.85); --bg-card-hover: rgba(40, 35, 42, 0.95);
+  --border-subtle: #362E38; --border-hover: #D19EBB;
+  --text-primary: #F0EAF4; --text-secondary: #A89CAE; --text-muted: #786C7D;
+  --morandi-purple: #D19EBB; --morandi-blue: #C29BB0;
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3); --shadow-hover: 0 8px 30px rgba(209, 158, 187, 0.2);
+}
+
+/* 3. 刚玉蓝 (RAL 220 40 10 · corundum-blue) */
+html[data-theme="corundum-blue"][data-mode="light"], html[data-theme="corundum-blue"]:not([data-mode]) {
+  --primary: #4A6670; --accent: #4A6670; --accent-soft: rgba(74, 102, 112, 0.12);
+  --bg-primary: #E8EEF0; --bg-surface: #FFFFFF; --bg-surface-elevated: #F8FAFB; --bg-surface-hover: #DDE5E8;
+  --bg-card: rgba(255, 255, 255, 0.85); --bg-card-hover: rgba(255, 255, 255, 0.98);
+  --border-subtle: rgba(0, 0, 0, 0.08); --border-hover: #4A6670;
+  --text-primary: #3D3D3D; --text-secondary: #5A6D74; --text-muted: #8B9EA5;
+  --morandi-purple: #557582; --morandi-blue: #4A6670;
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.05); --shadow-hover: 0 8px 30px rgba(74, 102, 112, 0.15);
+}
+html[data-theme="corundum-blue"][data-mode="dark"] {
+  --primary: #6A9AAA; --accent: #6A9AAA; --accent-soft: rgba(106, 154, 170, 0.15);
+  --bg-primary: #141A1C; --bg-surface: #1C2428; --bg-surface-elevated: #242F34; --bg-surface-hover: #2D3A40;
+  --bg-card: rgba(28, 36, 40, 0.85); --bg-card-hover: rgba(36, 47, 52, 0.95);
+  --border-subtle: #2E3C42; --border-hover: #6A9AAA;
+  --text-primary: #E8EEF0; --text-secondary: #97A9B0; --text-muted: #6B7C82;
+  --morandi-purple: #6A9AAA; --morandi-blue: #5B8896;
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3); --shadow-hover: 0 8px 30px rgba(106, 154, 170, 0.2);
+}
+
+/* 4. 冰猕猴桃汁绿 (RAL 120 90 20 · kiwi-green) */
+html[data-theme="kiwi-green"][data-mode="light"], html[data-theme="kiwi-green"]:not([data-mode]) {
+  --primary: #7A9A5C; --accent: #7A9A5C; --accent-soft: rgba(122, 154, 92, 0.12);
+  --bg-primary: #E8F0E4; --bg-surface: #FFFFFF; --bg-surface-elevated: #F8FAF6; --bg-surface-hover: #DDE8D7;
+  --bg-card: rgba(255, 255, 255, 0.85); --bg-card-hover: rgba(255, 255, 255, 0.98);
+  --border-subtle: rgba(0, 0, 0, 0.08); --border-hover: #7A9A5C;
+  --text-primary: #3D3D3D; --text-secondary: #5C6E4D; --text-muted: #8E9E80;
+  --morandi-purple: #7A9A5C; --morandi-blue: #648248;
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.05); --shadow-hover: 0 8px 30px rgba(122, 154, 92, 0.15);
+}
+html[data-theme="kiwi-green"][data-mode="dark"] {
+  --primary: #9ABA7C; --accent: #9ABA7C; --accent-soft: rgba(154, 186, 124, 0.15);
+  --bg-primary: #161A14; --bg-surface: #1F241C; --bg-surface-elevated: #283024; --bg-surface-hover: #323C2D;
+  --bg-card: rgba(31, 36, 28, 0.85); --bg-card-hover: rgba(40, 48, 36, 0.95);
+  --border-subtle: #323E2E; --border-hover: #9ABA7C;
+  --text-primary: #E8F0E4; --text-secondary: #A0B096; --text-muted: #728268;
+  --morandi-purple: #9ABA7C; --morandi-blue: #84A268;
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3); --shadow-hover: 0 8px 30px rgba(154, 186, 124, 0.2);
+}
+
+/* 5. 辛辣红 (RAL 030 40 40 · spicy-red) */
+html[data-theme="spicy-red"][data-mode="light"], html[data-theme="spicy-red"]:not([data-mode]) {
+  --primary: #8B4049; --accent: #8B4049; --accent-soft: rgba(139, 64, 73, 0.12);
+  --bg-primary: #F0E8E8; --bg-surface: #FFFFFF; --bg-surface-elevated: #FAF6F6; --bg-surface-hover: #E7DDDD;
+  --bg-card: rgba(255, 255, 255, 0.85); --bg-card-hover: rgba(255, 255, 255, 0.98);
+  --border-subtle: rgba(0, 0, 0, 0.08); --border-hover: #8B4049;
+  --text-primary: #3D3D3D; --text-secondary: #745255; --text-muted: #A18184;
+  --morandi-purple: #8B4049; --morandi-blue: #70353C;
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.05); --shadow-hover: 0 8px 30px rgba(139, 64, 73, 0.15);
+}
+html[data-theme="spicy-red"][data-mode="dark"] {
+  --primary: #C06068; --accent: #C06068; --accent-soft: rgba(192, 96, 104, 0.15);
+  --bg-primary: #1A1416; --bg-surface: #241A1D; --bg-surface-elevated: #302226; --bg-surface-hover: #3C2B30;
+  --bg-card: rgba(36, 26, 29, 0.85); --bg-card-hover: rgba(48, 34, 38, 0.95);
+  --border-subtle: #3E2B30; --border-hover: #C06068;
+  --text-primary: #F0E8E8; --text-secondary: #B0989B; --text-muted: #80686B;
+  --morandi-purple: #C06068; --morandi-blue: #A45058;
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3); --shadow-hover: 0 8px 30px rgba(192, 96, 104, 0.2);
+}
+
+/* 6. 明水鸭色 (RAL 180 80 10 · teal-water) */
+html[data-theme="teal-water"][data-mode="light"], html[data-theme="teal-water"]:not([data-mode]) {
+  --primary: #5A8A8A; --accent: #5A8A8A; --accent-soft: rgba(90, 138, 138, 0.12);
+  --bg-primary: #E4F0F0; --bg-surface: #FFFFFF; --bg-surface-elevated: #F5FAFA; --bg-surface-hover: #D7E8E8;
+  --bg-card: rgba(255, 255, 255, 0.85); --bg-card-hover: rgba(255, 255, 255, 0.98);
+  --border-subtle: rgba(0, 0, 0, 0.08); --border-hover: #5A8A8A;
+  --text-primary: #3D3D3D; --text-secondary: #4D6D6D; --text-muted: #7E9D9D;
+  --morandi-purple: #5A8A8A; --morandi-blue: #446C6C;
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.05); --shadow-hover: 0 8px 30px rgba(90, 138, 138, 0.15);
+}
+html[data-theme="teal-water"][data-mode="dark"] {
+  --primary: #7ABAAA; --accent: #7ABAAA; --accent-soft: rgba(122, 186, 170, 0.15);
+  --bg-primary: #121A1A; --bg-surface: #192424; --bg-surface-elevated: #213030; --bg-surface-hover: #2A3C3C;
+  --bg-card: rgba(25, 36, 36, 0.85); --bg-card-hover: rgba(33, 48, 48, 0.95);
+  --border-subtle: #2A3C3C; --border-hover: #7ABAAA;
+  --text-primary: #E4F0F0; --text-secondary: #94B4B4; --text-muted: #668484;
+  --morandi-purple: #7ABAAA; --morandi-blue: #629E90;
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3); --shadow-hover: 0 8px 30px rgba(122, 186, 170, 0.2);
+}
+
+/* 7. Geist (Vercel · 极简黑白 · geist) */
+html[data-theme="geist"][data-mode="light"], html[data-theme="geist"]:not([data-mode]) {
+  --primary: #111111; --accent: #111111; --accent-soft: rgba(0, 0, 0, 0.08);
+  --bg-primary: #FFFFFF; --bg-surface: #FAFAFA; --bg-surface-elevated: #F5F5F5; --bg-surface-hover: #EEEEEE;
+  --bg-card: rgba(255, 255, 255, 0.92); --bg-card-hover: #FFFFFF;
+  --border-subtle: #E5E5E5; --border-hover: #000000;
+  --text-primary: #111111; --text-secondary: #555555; --text-muted: #888888;
+  --morandi-purple: #000000; --morandi-blue: #333333;
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.05); --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+html[data-theme="geist"][data-mode="dark"] {
+  --primary: #EDEDED; --accent: #EDEDED; --accent-soft: rgba(255, 255, 255, 0.15);
+  --bg-primary: #111111; --bg-surface: #181818; --bg-surface-elevated: #222222; --bg-surface-hover: #2C2C2C;
+  --bg-card: rgba(24, 24, 24, 0.85); --bg-card-hover: rgba(34, 34, 34, 0.95);
+  --border-subtle: #2E2E2E; --border-hover: #EDEDED;
+  --text-primary: #EDEDED; --text-secondary: #A1A1A1; --text-muted: #707070;
+  --morandi-purple: #EDEDED; --morandi-blue: #D0D0D0;
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.4); --shadow-hover: 0 8px 30px rgba(255, 255, 255, 0.1);
+}
+
+/* ================= ChatFlow 外观设置弹窗 UI 样式 (1:1 还原) ================= */
+.theme-trigger-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: var(--transition);
+  backdrop-filter: blur(8px);
+}
+.theme-trigger-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
+  transform: translateY(-1px);
+}
+.theme-trigger-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.chatflow-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  padding: 16px;
+}
+.chatflow-modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.chatflow-dialog {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  width: 680px;
+  max-width: 94vw;
+  padding: 24px;
+  transform: scale(0.96) translateY(8px);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.chatflow-modal-overlay.active .chatflow-dialog {
+  transform: scale(1) translateY(0);
+}
+
+.chatflow-dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.chatflow-dialog-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+.chatflow-close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: var(--transition);
+}
+.chatflow-close-btn:hover {
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
+}
+
+.chatflow-pill-container {
+  display: inline-flex;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 4px;
+  border-radius: 12px;
+  gap: 4px;
+}
+html[data-mode="dark"] .chatflow-pill-container {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.chatflow-pill-btn {
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  color: var(--text-secondary);
+  border: none;
+  background: transparent;
+}
+.chatflow-pill-btn:hover {
+  color: var(--text-primary);
+}
+.chatflow-pill-btn.active {
+  background: var(--bg-surface-elevated);
+  color: var(--text-primary);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  font-weight: 600;
+}
+
+.chatflow-themes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
+  gap: 12px;
+}
+
+.chatflow-theme-card {
+  height: 108px;
+  border-radius: 14px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+}
+html[data-mode="dark"] .chatflow-theme-card {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.chatflow-theme-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+.chatflow-theme-card.active {
+  border: 2px solid var(--accent) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+.chatflow-check-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: bold;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.chatflow-color-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  border: 1.5px solid rgba(255, 255, 255, 0.8);
+  margin-left: auto;
+}
+
+/* 详情页半透明遮罩与主题联动 */
+.work-detail-view {
+  background-color: var(--bg-primary) !important;
+  background-image: 
+    linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-surface) 100%) !important;
+}
+.detail-nav-bar {
+  background: var(--bg-surface) !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+}
+.detail-preview-box, .detail-info-block, .detail-prompt-block {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-subtle) !important;
+}
+.detail-prompt-code-wrap {
+  background: var(--bg-surface-elevated) !important;
 }

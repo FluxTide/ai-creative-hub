@@ -155,7 +155,7 @@
       this.updateStageParams();
 
       const tentacleCount = this.stage === 'baby' ? 4 : (this.stage === 'teen' ? 6 : 7);
-      const segCount = this.stage === 'baby' ? 9 : (this.stage === 'teen' ? 11 : 13);
+      const segCount = this.stage === 'baby' ? 6 : (this.stage === 'teen' ? 7 : 8);
 
       this.tentacles = [];
       for (let i = 0; i < tentacleCount; i++) {
@@ -180,7 +180,7 @@
       if (this.stage === 'elder') {
         for (let i = 0; i < 2; i++) {
           const armSegs = [];
-          for (let j = 0; j < 15; j++) {
+          for (let j = 0; j < 8; j++) {
             armSegs.push({
               x: this.x,
               y: this.y + j * 6,
@@ -206,10 +206,10 @@
 
       // 处于收缩喷射的瞬间 (峰值爆发点)
       const isContracting = Math.cos(this.pulsePhase) > 0.88;
-      let thrustScale = this.stage === 'baby' ? 1.35 : (this.stage === 'teen' ? 1.05 : 0.85);
+      let thrustScale = this.stage === 'baby' ? 0.45 : (this.stage === 'teen' ? 0.36 : 0.28);
 
       if (isContracting) {
-        const pushThrust = thrustScale * (0.85 + Math.random() * 0.35);
+        const pushThrust = thrustScale * (0.75 + Math.random() * 0.25);
         this.vx += Math.cos(this.angle) * pushThrust;
         this.vy += Math.sin(this.angle) * pushThrust;
 
@@ -226,14 +226,14 @@
         // A. 抢食吞食完毕：即刻反向散开，绝不原地重叠
         this.dispersalTimer--;
         this.targetAngle = this.dispersalAngle;
-        this.vx += Math.cos(this.dispersalAngle) * 0.45;
-        this.vy += Math.sin(this.dispersalAngle) * 0.45;
+        this.vx += Math.cos(this.dispersalAngle) * 0.22;
+        this.vy += Math.sin(this.dispersalAngle) * 0.22;
       } else if (this.scaredTimer > 0) {
         // B. 点触受惊：反向避让 150-200px
         this.scaredTimer--;
         this.targetAngle = this.scaredAngle;
-        this.vx += Math.cos(this.scaredAngle) * 0.55;
-        this.vy += Math.sin(this.scaredAngle) * 0.55;
+        this.vx += Math.cos(this.scaredAngle) * 0.28;
+        this.vy += Math.sin(this.scaredAngle) * 0.28;
         if (this.scaredTimer % 8 === 0) {
           spawnBubble(this.x, this.y, 2, true);
         }
@@ -254,7 +254,7 @@
         if (nearestFood) {
           // 朝食物加速逼近
           this.targetAngle = Math.atan2(nearestFood.y - this.y, nearestFood.x - this.x);
-          const approachSpeed = (this.stage === 'baby' ? 0.38 : (this.stage === 'teen' ? 0.28 : 0.22));
+          const approachSpeed = (this.stage === 'baby' ? 0.16 : (this.stage === 'teen' ? 0.12 : 0.09));
           this.vx += Math.cos(this.targetAngle) * approachSpeed;
           this.vy += Math.sin(this.targetAngle) * approachSpeed;
 
@@ -317,7 +317,7 @@
       this.angle += diff * (this.stage === 'baby' ? 0.09 : 0.05);
 
       // 阻尼衰减
-      const drag = this.stage === 'baby' ? 0.94 : (this.stage === 'teen' ? 0.93 : 0.91);
+      const drag = this.stage === 'baby' ? 0.88 : (this.stage === 'teen' ? 0.87 : 0.85);
       this.vx *= drag;
       this.vy *= drag;
 
@@ -358,7 +358,7 @@
         segs[0].y = rootY;
 
         const splayPower = Math.abs(normIdx) * 0.38;
-        const segDist = r * 0.32;
+        const segDist = r * 0.22;
 
         for (let j = 1; j < segs.length; j++) {
           const seg = segs[j];
@@ -377,7 +377,7 @@
 
           // 双重正弦柔性涟漪
           const wavePhase = this.pulsePhase * 1.8 + j * 0.75 + tObj.phaseOffset;
-          const waveAmp = (0.7 + j * 0.26);
+          const waveAmp = (0.4 + j * 0.14);
           seg.x += perpX * Math.sin(wavePhase) * waveAmp;
           seg.y += perpY * Math.sin(wavePhase) * waveAmp;
         }
@@ -394,7 +394,7 @@
           armSegs[0].x = rootX;
           armSegs[0].y = rootY;
 
-          const armSegDist = r * 0.34;
+          const armSegDist = r * 0.25;
           for (let j = 1; j < armSegs.length; j++) {
             const seg = armSegs[j];
             const prev = armSegs[j - 1];

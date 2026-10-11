@@ -44,7 +44,6 @@ Self-contained HTML file, responsive, running at 60fps.`,
     toolUrl: "https://claude.ai/artifact/MR4xiFtXmTkzXruQdeGvAt",
     assetUrl: null
   },
-  ,
   {
     id: "AI-VID-001",
     title: "马尔代夫果冻海 · 3D 微缩景观 (Atoll Jelly)",

@@ -324,30 +324,37 @@
       this.x += this.vx;
       this.y += this.vy;
 
-      // 5. 网页绝对坐标柔性边界弹回（四向软边界，到底到底儿了调头回游，不再瞬间穿越）
-      const pad = this.radius * 2.2;
-      // 左右边界：接近边缘提前平滑调头转向
+      // 5. 网页绝对坐标柔性边界弹回（四向软边界，到底到底儿了彻底反向调头漫游，绝不反复顶墙蹭墙）
+      const pad = this.radius * 2.5;
+
+      // 左边界：被弹回后，彻底将目标航向锁死向右漫游（-60° ~ +60°）
       if (this.x < pad) {
         this.x = pad;
-        this.vx = Math.abs(this.vx) * 0.7 + 0.2;
-        this.angle = Math.atan2(this.vy, this.vx);
-      } else if (this.x > pageW - pad) {
+        this.vx = Math.abs(this.vx) * 0.8 + 0.35;
+        this.targetAngle = (Math.random() - 0.5) * 1.2; // 明确朝右侧开阔水域游
+        this.angle = this.targetAngle;
+      } 
+      // 右边界：被弹回后，彻底将目标航向锁死向左漫游（120° ~ 240°）
+      else if (this.x > pageW - pad) {
         this.x = pageW - pad;
-        this.vx = -Math.abs(this.vx) * 0.7 - 0.2;
-        this.angle = Math.atan2(this.vy, this.vx);
+        this.vx = -Math.abs(this.vx) * 0.8 - 0.35;
+        this.targetAngle = Math.PI + (Math.random() - 0.5) * 1.2; // 明确朝左侧开阔水域游
+        this.angle = this.targetAngle;
       }
 
-      // 顶部边界：触顶调头向下游
+      // 顶边界：触顶弹回后，彻底将目标航向锁死向下漫游（30° ~ 150°）
       if (this.y < pad) {
         this.y = pad;
-        this.vy = Math.abs(this.vy) * 0.7 + 0.25;
-        this.angle = Math.atan2(this.vy, this.vx);
+        this.vy = Math.abs(this.vy) * 0.8 + 0.4;
+        this.targetAngle = Math.PI / 2 + (Math.random() - 0.5) * 1.0; // 明确朝下方深海游
+        this.angle = this.targetAngle;
       } 
-      // 底部边界：触底到底儿了，调头向上回游，绝不再传送回顶部
+      // 底边界：触底到底儿了，彻底将目标航向锁死向上漫游（-150° ~ -30°）
       else if (this.y > pageH - pad) {
         this.y = pageH - pad;
-        this.vy = -Math.abs(this.vy) * 0.7 - 0.35;
-        this.angle = Math.atan2(this.vy, this.vx);
+        this.vy = -Math.abs(this.vy) * 0.8 - 0.45;
+        this.targetAngle = -Math.PI / 2 + (Math.random() - 0.5) * 1.0; // 明确朝上方漫游回游
+        this.angle = this.targetAngle;
       }
 
       // 6. 更新骨骼：触手与口腕

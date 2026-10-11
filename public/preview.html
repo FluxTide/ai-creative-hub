@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>水母的探索日记 · AI 创作资源库</title>
+  <meta name="description" content="到处乱逛，顺便捡点有意思的东西 🪼 设计｜科技｜AI｜奇奇怪怪的小玩意">
+  <link rel="icon" href="assets/avatar.png">
+  <link rel="stylesheet" href="style.css?v=20261011_17">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style id="preview-header-style">
+.profile-card-refined {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-end !important;
+  gap: 24px !important;
+  padding: 0 36px 20px !important;
+  margin-top: -48px !important;
+}
+.profile-main-left {
+  display: flex !important;
+  align-items: flex-end !important;
+  gap: 22px !important;
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+.profile-main-left .avatar-wrapper {
+  width: 104px !important;
+  height: 104px !important;
+  flex-shrink: 0 !important;
+}
+.profile-main-left .profile-info {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  min-width: 0 !important;
+}
+.profile-title-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  margin-bottom: 2px !important;
+}
+.profile-title-row .account-name {
+  font-size: 26px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.6px !important;
+  line-height: 1.15 !important;
+}
+.profile-title-row .account-tag {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  padding: 3px 9px !important;
+  border-radius: 20px !important;
+  background: var(--surface) !important;
+  color: var(--accent) !important;
+  border: 1px solid var(--border) !important;
+}
+.bio-line-main {
+  font-size: 14px !important;
+  color: var(--text-secondary) !important;
+  font-weight: 400 !important;
+  margin: 0 !important;
+}
+.bio-tags-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  font-size: 12px !important;
+  color: var(--text-muted) !important;
+  margin-top: 2px !important;
+}
+.bio-chip-dot {
+  opacity: 0.4 !important;
+  font-weight: bold !important;
+}
+.profile-actions-right {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-end !important;
+  gap: 10px !important;
+  flex-shrink: 0 !important;
+}
+.actions-buttons-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+.theme-trigger-btn {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-primary) !important;
+  padding: 8px 14px !important;
+  border-radius: 20px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  transition: all 0.2s ease !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+.theme-trigger-btn:hover {
+  border-color: var(--border-hover) !important;
+  transform: translateY(-1px) !important;
+}
+.btn-xhs {
+  padding: 8px 16px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  border-radius: 20px !important;
+  background: linear-gradient(135deg, #ff2442 0%, #ea1b37 100%) !important;
+  box-shadow: 0 4px 14px rgba(255, 36, 66, 0.25) !important;
+}
+.stats-live-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  font-size: 11px !important;
+  color: var(--text-muted) !important;
+  padding: 4px 10px !important;
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 12px !important;
+}
+.pulsing-dot {
+  width: 6px !important;
+  height: 6px !important;
+  background: #10b981 !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 6px #10b981 !important;
+  animation: pulse 2s infinite !important;
+}
+@keyframes pulse {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+@media (max-width: 768px) {
+  .profile-card-refined {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 18px !important;
+    padding: 0 20px 16px !important;
+    margin-top: -36px !important;
+  }
+  .profile-main-left {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 14px !important;
+  }
+  .profile-actions-right {
+    align-items: flex-start !important;
+    width: 100% !important;
+  }
+  .actions-buttons-row {
+    width: 100% !important;
+  }
+}
+</style>
+
+</head>
+<body>
+  <!-- 背景氛围光效 -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <!-- 主容器 -->
+  <div class="app-container">
+    
+    <!-- 顶部 Banner 与 个人品牌区 -->
+    <header class="hero-section">
+      <div class="banner-wrapper" id="bannerWrapper">
+        <div class="banner-3d-scene" id="banner3dScene">
+          <img src="assets/banner.png" alt="梦幻水母创意工作室" class="banner-img" id="bannerImg">
+          <div class="banner-overlay"></div>
+        </div>
+      </div>
+
+      <div class="profile-card profile-card-refined">
+        <!-- 左侧：创作者头像与身份信息 -->
+        <div class="profile-main-left">
+          <div class="avatar-wrapper">
+            <img src="assets/avatar.png" alt="水母头像" class="avatar-img">
+            <span class="online-badge" title="持续更新中">🪼</span>
+          </div>
+
+          <div class="profile-info">
+            <div class="profile-title-row">
+              <h1 class="account-name">水母的探索日记</h1>
+              <span class="account-tag">AI Creator & Explorer</span>
+            </div>
+            
+            <p class="bio-line-main">到处乱逛，顺便捡点有意思的东西 🪼</p>
+            
+            <div class="bio-tags-row">
+              <span class="bio-chip">设计</span>
+              <span class="bio-chip-dot">·</span>
+              <span class="bio-chip">科技</span>
+              <span class="bio-chip-dot">·</span>
+              <span class="bio-chip">AI</span>
+              <span class="bio-chip-dot">·</span>
+              <span class="bio-chip">奇奇怪怪的小玩意</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右侧：干净独立的行动操作区 -->
+        <div class="profile-actions-right">
+          <div class="actions-buttons-row">
+            <button id="themeTriggerBtn" class="theme-trigger-btn" title="外观设置">
+              <span id="themeTriggerDot" class="theme-trigger-dot"></span>
+              <span id="themeTriggerLabel">外观设置</span>
+              <span style="font-size: 11px; opacity: 0.6;">⚙️</span>
+            </button>
+            <a href="https://www.xiaohongshu.com/user/profile/5e966e0b000000000100b70e" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-xhs">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/>
+              </svg>
+              前往小红书
+            </a>
+          </div>
+          <div class="stats-live-badge">
+            <span class="pulsing-dot"></span>
+            <span>持续收录提示词与工作流</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 导航栏与筛选控制 -->
+    <section class="controls-section">
+      <div class="tabs-group" id="categoryTabs">
+        <button class="tab-btn active" data-category="all">全部作品 <span class="count" id="countAll">0</span></button>
+        <button class="tab-btn" data-category="video">AI 视频创作 <span class="count" id="countVideo">0</span></button>
+        <button class="tab-btn" data-category="image">AI 图片创作 <span class="count" id="countImage">0</span></button>
+        <button class="tab-btn" data-category="workflow">工具与工作流 <span class="count" id="countWorkflow">0</span></button>
+      </div>
+
+      <div class="search-wrap">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="searchInput" placeholder="搜索作品、提示词关键词、工具..." autocomplete="off">
+      </div>
+    </section>
+
+    <!-- 作品网格（对标 sael.net 交互卡片） -->
+    <main class="grid-section">
+      <div class="cards-grid" id="cardsGrid">
+        <!-- 由 JavaScript 动态渲染作品卡片 -->
+      </div>
+      <div class="empty-state" id="emptyState" style="display: none;">
+        <div class="empty-emoji">🫧</div>
+        <p>没有找到相关作品，试试换个关键词吧</p>
+      </div>
+    </main>
+
+    <!-- 极简页脚 -->
+    <footer class="app-footer">
+      <div class="footer-content">
+        <p>© 2026 水母的探索日记 · 作品与提示词开放资源库</p>
+        <p class="footer-tip">点击卡片可查看完整正负提示词、高清视频演示与体验工具直达</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- 整页作品详情视图（按四个区域专属排版） -->
+  <div class="work-detail-view" id="workDetailView">
+    <!-- 区域 4：左上角直接返回主页面 -->
+    <header class="detail-nav-bar">
+      <button class="detail-back-btn" id="detailBackBtn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        <span>返回主页</span>
+      </button>
+      <div class="detail-nav-title" id="detailNavTitle">作品详情</div>
+    </header>
+
+    <div class="detail-grid-layout" id="detailGridLayout">
+      <!-- 动态插入：区域1（左侧视频）、区域2（右侧链接）、区域3（右侧提示词） -->
+    </div>
+  </div>
+
+  <!-- ChatFlow 外观设置弹窗 (1:1 像素级还原) -->
+  <div id="themeModalOverlay" class="chatflow-modal-overlay">
+    <div class="chatflow-dialog">
+      <!-- Header -->
+      <div class="chatflow-dialog-header">
+        <h3 class="chatflow-dialog-title">外观设置</h3>
+        <button id="themeModalCloseBtn" class="chatflow-close-btn" aria-label="关闭">✕</button>
+      </div>
+
+      <!-- Mode Toggle Segmented Control (Pill Switcher) -->
+      <div>
+        <div class="chatflow-pill-container">
+          <button id="modeLightBtn" class="chatflow-pill-btn" data-mode="light">
+            <span style="font-size: 14px;">☀️</span>
+            <span>浅色</span>
+          </button>
+          <button id="modeDarkBtn" class="chatflow-pill-btn" data-mode="dark">
+            <span style="font-size: 14px;">🌙</span>
+            <span>深色</span>
+          </button>
+          <button id="modeSystemBtn" class="chatflow-pill-btn" data-mode="system">
+            <span style="font-size: 14px;">💻</span>
+            <span>跟随系统</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 7大色调网格 -->
+      <div id="chatflowThemesGrid" class="chatflow-themes-grid">
+        <!-- 动态通过 JS 渲染 7 张主题卡片 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast 提示条 -->
+  <div class="toast" id="toast">复制成功！</div>
+
+  <script src="data.js?v=20261011_17"></script>
+  <script src="app.js?v=20261011_17"></script>
+</body>
+</html>

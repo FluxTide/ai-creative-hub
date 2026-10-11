@@ -6,7 +6,7 @@
   <title>水母的探索日记 · AI 创作资源库</title>
   <meta name="description" content="到处乱逛，顺便捡点有意思的东西 🪼 设计｜科技｜AI｜奇奇怪怪的小玩意">
   <link rel="icon" href="assets/avatar.png">
-  <link rel="stylesheet" href="style.css?v=20261011_17">
+  <link rel="stylesheet" href="style.css?v=20261011_18">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -29,25 +29,31 @@
       </div>
 
       <div class="profile-card">
-        <div class="avatar-wrapper">
-          <img src="assets/avatar.png" alt="水母头像" class="avatar-img">
-          <span class="online-badge" title="持续更新中">🪼</span>
+        <!-- 3. 头像与 2. 蓝色框信息区域：自然居左下放，不压背景 -->
+        <div class="profile-card-left">
+          <div class="avatar-wrapper">
+            <img src="assets/avatar.png" alt="水母头像" class="avatar-img">
+            <span class="online-badge" title="持续更新中">🪼</span>
+          </div>
+
+          <div class="profile-info">
+            <div class="profile-title-row">
+              <h1 class="account-name">水母的探索日记</h1>
+              <span class="account-tag">AI Creator & Explorer</span>
+            </div>
+            
+            <div class="profile-bio">
+              <p class="bio-line-main">到处逛逛，顺便捡点有意思的东西 🪼</p>
+              <p class="bio-line-sub">设计 ｜ 科技 ｜ AI ｜ 奇奇怪怪的小玩意</p>
+            </div>
+          </div>
         </div>
 
-        <div class="profile-info">
-          <div class="profile-title-row">
-            <h1 class="account-name">水母的探索日记</h1>
-            <span class="account-tag">AI Creator & Explorer</span>
-          </div>
-          
-          <div class="profile-bio">
-            <p class="bio-line-main">到处乱逛，顺便捡点有意思的东西 🪼</p>
-            <p class="bio-line-sub">设计 ｜ 科技 ｜ AI ｜ 奇奇怪怪的小玩意</p>
-          </div>
-
-          <div class="profile-actions">
+        <!-- 1. 红色框按钮区：全部右对齐放置在绿色卡片右侧 -->
+        <div class="profile-actions">
+          <div class="profile-buttons-row">
             <a href="https://www.xiaohongshu.com/user/profile/5e966e0b000000000100b70e" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/>
               </svg>
               前往小红书主页
@@ -57,9 +63,9 @@
               <span id="themeTriggerLabel">云上舞白</span>
               <span style="font-size: 12px; opacity: 0.7;">⚙️</span>
             </button>
-            <div class="stats-pill">
-              <span class="dot"></span> 持续收录完整提示词 & 工作流
-            </div>
+          </div>
+          <div class="stats-pill">
+            <span class="dot"></span> 持续收录完整提示词 & 工作流
           </div>
         </div>
       </div>
@@ -160,6 +166,6 @@
   <div class="toast" id="toast">复制成功！</div>
 
   <script src="data.js?v=20261011_17"></script>
-  <script src="app.js?v=20261011_17"></script>
+  <script src="app.js?v=20261011_18"></script>
 </body>
 </html>

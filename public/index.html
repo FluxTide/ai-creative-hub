@@ -6,12 +6,14 @@
   <title>水母的探索日记 · AI 创作资源库</title>
   <meta name="description" content="到处乱逛，顺便捡点有意思的东西 🪼 设计｜科技｜AI｜奇奇怪怪的小玩意">
   <link rel="icon" href="assets/avatar.png">
-  <link rel="stylesheet" href="style.css?v=20261011_23">
+  <link rel="stylesheet" href="style.css?v=20261011_24">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
+  <!-- 陪伴水母背景 Canvas (穿透点击，不影响卡片交互) -->
+  <canvas id="jellyfishCanvas"></canvas>
   <!-- 背景氛围光效 -->
   <div class="ambient-glow glow-1"></div>
   <div class="ambient-glow glow-2"></div>
@@ -155,6 +157,19 @@
         </div>
       </div>
 
+            <!-- 陪伴水母控制项 -->
+      <div class="chatflow-setting-row">
+        <div class="chatflow-setting-info">
+          <div class="chatflow-setting-label">🪼 陪伴水母数量</div>
+          <div class="chatflow-setting-desc">原生物理动力学模拟，支持鼠标/手指轻逗交互</div>
+        </div>
+        <div class="chatflow-stepper">
+          <button id="jellyfishDecBtn" class="chatflow-stepper-btn" aria-label="减少水母">−</button>
+          <span id="jellyfishCountDisplay" class="chatflow-stepper-value">5 只</span>
+          <button id="jellyfishIncBtn" class="chatflow-stepper-btn" aria-label="增加水母">+</button>
+        </div>
+      </div>
+
       <!-- 7大色调网格 -->
       <div id="chatflowThemesGrid" class="chatflow-themes-grid">
         <!-- 动态通过 JS 渲染 7 张主题卡片 -->
@@ -165,7 +180,8 @@
   <!-- Toast 提示条 -->
   <div class="toast" id="toast">复制成功！</div>
 
-  <script src="data.js?v=20261011_23"></script>
-  <script src="app.js?v=20261011_23"></script>
+  <script src="jellyfish.js?v=20261011_24"></script>
+  <script src="data.js?v=20261011_24"></script>
+  <script src="app.js?v=20261011_24"></script>
 </body>
 </html>

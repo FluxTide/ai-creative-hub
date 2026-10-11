@@ -231,11 +231,9 @@ body {
 .banner-wrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 3 / 1; /* 严格按照原图 2172x724 (3:1) 比例容器 */
-  min-height: 260px;
-  max-height: 440px;
+  aspect-ratio: 2172 / 724; /* 精确锁定原图 3:1 比例 */
   overflow: hidden;
-  background: #0d0f14;
+  background: transparent; /* 消除背景黑底，与主题浑然一体 */
   transform-style: preserve-3d;
   cursor: grab;
 }
@@ -254,9 +252,9 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-  object-fit: contain; /* 完整漏出原图上下全部画面，无任何裁切 */
+  object-fit: cover; /* 满铺填充满整个 3:1 容器，上下左右完全贴合，不留一丝黑边 */
   object-position: center center;
-  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.4);
+  display: block;
   will-change: transform;
 }
 

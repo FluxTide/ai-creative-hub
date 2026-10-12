@@ -6,7 +6,7 @@
   <title>水母的探索日记 · AI 创作资源库</title>
   <meta name="description" content="到处乱逛，顺便捡点有意思的东西 🪼 设计｜科技｜AI｜奇奇怪怪的小玩意">
   <link rel="icon" href="assets/avatar.png">
-  <link rel="stylesheet" href="style.css?v=20261011_45">
+  <link rel="stylesheet" href="style.css?v=20261011_46">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -68,6 +68,17 @@
             <button id="commercialBtn" class="commercial-trigger-btn" title="商业合作 & 赞助">
               <span>💼 商业合作</span>
             </button>
+            <div id="authTriggerArea" class="auth-trigger-wrap">
+              <button id="loginBtn" class="auth-trigger-btn" title="登录/注册">
+                <span>🪼 登录 / 注册</span>
+              </button>
+              <div id="userProfileMenu" class="user-profile-badge hidden">
+                <span class="user-avatar-dot"></span>
+                <span id="userNameLabel" class="user-name-text">创作者</span>
+                <span id="userRoleTag" class="user-role-tag">普通会员</span>
+                <button id="logoutBtn" class="logout-mini-btn" title="退出登录">退出</button>
+              </div>
+            </div>
           </div>
           <div class="stats-pill">
             <span class="dot"></span> 持续收录完整提示词 & 工作流
@@ -218,12 +229,62 @@
     </div>
   </div>
 
+  <!-- 登录 / 注册认证模态框 (自适应主题 Morandi 磨砂质感) -->
+  <div id="authModalOverlay" class="chatflow-modal-overlay">
+    <div class="chatflow-dialog auth-dialog" style="max-width: 440px;">
+      <div class="chatflow-dialog-header">
+        <div>
+          <div class="chatflow-dialog-title" id="authModalTitle">🪼 创作者通行证</div>
+          <div class="chatflow-dialog-subtitle" id="authModalSubtitle">关注公众号回复【水母】获取内测专属邀请码</div>
+        </div>
+        <button id="authModalClose" class="chatflow-close-btn" title="关闭">✕</button>
+      </div>
+
+      <div class="auth-tabs-row">
+        <button id="tabSwitchLogin" class="auth-tab-btn active">会员登录</button>
+        <button id="tabSwitchRegister" class="auth-tab-btn">邀请码注册</button>
+      </div>
+
+      <!-- 登录表单 -->
+      <form id="loginForm" class="auth-form-content">
+        <div class="auth-input-group">
+          <label>账号 / 邮箱</label>
+          <input type="text" id="loginUsername" placeholder="请输入你的创作者昵称或邮箱" required autocomplete="username">
+        </div>
+        <div class="auth-input-group">
+          <label>访问密码</label>
+          <input type="password" id="loginPassword" placeholder="请输入密码" required autocomplete="current-password">
+        </div>
+        <div class="auth-error-msg hidden" id="loginErrorMsg"></div>
+        <button type="submit" class="auth-submit-btn">立即登录</button>
+      </form>
+
+      <!-- 注册表单 -->
+      <form id="registerForm" class="auth-form-content hidden">
+        <div class="auth-input-group">
+          <label>创作者昵称</label>
+          <input type="text" id="regUsername" placeholder="起一个好听的探索日记名字" required autocomplete="username">
+        </div>
+        <div class="auth-input-group">
+          <label>设置密码</label>
+          <input type="password" id="regPassword" placeholder="至少 6 位字母或数字" required autocomplete="new-password">
+        </div>
+        <div class="auth-input-group">
+          <label>专属邀请通行码 <span class="auth-tip-pill">公众号回复【水母】自动获取</span></label>
+          <input type="text" id="regInviteCode" placeholder="如：JELLY-VIP" required>
+        </div>
+        <div class="auth-error-msg hidden" id="regErrorMsg"></div>
+        <button type="submit" class="auth-submit-btn">验证邀请码并完成注册</button>
+      </form>
+    </div>
+  </div>
+
   <!-- Toast 提示条 -->
   <div class="toast" id="toast">复制成功！</div>
 
   <script src="seaweed.js?v=20261011_42"></script>
   <script src="jellyfish.js?v=20261011_43"></script>
   <script src="data.js?v=20261011_24"></script>
-  <script src="app.js?v=20261011_45"></script>
+  <script src="app.js?v=20261011_46"></script>
 </body>
 </html>

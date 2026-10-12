@@ -1094,7 +1094,7 @@ body {
   text-align: center;
   margin-top: 60px;
   padding-top: 30px;
-  padding-bottom: 380px; /* 为海底水草生态带预留充分完整的展示空间，露出根部礁石与沙层 */
+  padding-bottom: 240px; /* 适度预留水草生长空间，告别突兀空旷 */
   border-top: 1px solid var(--border-subtle);
   color: var(--text-muted);
   font-size: 13px;

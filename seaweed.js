@@ -206,6 +206,8 @@
     ctx.save();
 
     // 1. 绘制海床暗礁基石群（带立体圆润边缘）
+    // 已根据用户反馈移除生硬的灰色椭圆基石，保持海床干净清爽
+    /*
     for (const rock of seabedRocks) {
       ctx.fillStyle = pal.seabedRock;
       ctx.beginPath();
@@ -216,6 +218,7 @@
       ctx.lineWidth = 1.2;
       ctx.stroke();
     }
+    */
 
     // 2. 绘制各株水草（带视口裁剪优化）
     for (const p of plants) {

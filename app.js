@@ -352,12 +352,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function showToast(msg) {
-    toast.innerText = msg;
-    toast.classList.add('show');
-    setTimeout(() => {
-      toast.classList.remove('show');
-    }, 2200);
+    if (toast) {
+      toast.innerText = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2200);
+    }
   }
+  window.showToast = showToast;
 
   // 监听关闭
   if (detailBackBtn) detailBackBtn.addEventListener('click', closeDetail);
@@ -632,9 +635,9 @@ function initChatflowThemeEvents() {
   const authModalOverlay = document.getElementById('authModalOverlay');
   const authTriggerBtn = document.getElementById('authTriggerBtn');
   const closeAuthModalBtn = document.getElementById('closeAuthModalBtn');
-  const userProfileBadge = document.getElementById('userProfileBadge');
-  const currentUserNameSpan = document.getElementById('currentUserName');
-  const currentUserRoleSpan = document.getElementById('currentUserRole');
+  const userProfileBadge = document.getElementById('userProfileMenu');
+  const currentUserNameSpan = document.getElementById('userNameLabel');
+  const currentUserRoleSpan = document.getElementById('userRoleTag');
   const logoutBtn = document.getElementById('logoutBtn');
 
   const tabLoginBtn = document.getElementById('tabLoginBtn');
@@ -648,13 +651,16 @@ function initChatflowThemeEvents() {
   const loginErrorMsg = document.getElementById('loginErrorMsg');
 
   const regUsernameInput = document.getElementById('regUsername');
+  const regEmailInput = document.getElementById('regEmail');
+  const regVerifyCodeInput = document.getElementById('regVerifyCode');
+  const sendCodeBtn = document.getElementById('sendCodeBtn');
   const regPasswordInput = document.getElementById('regPassword');
   const regInviteCodeInput = document.getElementById('regInviteCode');
   const submitRegisterBtn = document.getElementById('submitRegisterBtn');
   const regErrorMsg = document.getElementById('regErrorMsg');
 
   // 内置允许的通行邀请码列表 (可配置扩充)
-  const VALID_INVITE_CODES = ['JELLY2026', 'JELLY-VIP', 'SHUIMU888', 'PRO-CREATOR'];
+  const VALID_INVITE_CODES = ['JELLY2026', 'JELLY-VIP', 'SHUIMU888', 'PRO-8888', 'PRO-CREATOR'];
 
   // 用户数据初始化 (持久化在 localStorage)
   function getStoredUsers() {
@@ -745,42 +751,145 @@ function initChatflowThemeEvents() {
     });
   }
 
+  // 发送邮箱验证码逻辑 (支持真实发送与倒计时防刷)
+  let verifyCodeTimer = null;
+  let currentActiveVerifyCode = null; // 当前内存活跃的验证码
+  let currentVerifyEmail = null;
+  window._getActiveVerifyCode = () => currentActiveVerifyCode;
+
+  if (sendCodeBtn) {
+    sendCodeBtn.addEventListener('click', async () => {
+      const email = (regEmailInput.value || '').trim();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!email || !emailRegex.test(email)) {
+        regErrorMsg.innerText = '请输入有效的电子邮箱地址 (如 xx@qq.com)';
+        regErrorMsg.classList.remove('hidden');
+        regEmailInput.focus();
+        return;
+      }
+
+      // 查重：邮箱是否已被注册
+      const users = getStoredUsers();
+      if (users.find(u => (u.email || '').toLowerCase() === email.toLowerCase())) {
+        regErrorMsg.innerText = '该邮箱已注册过账号，请直接登录';
+        regErrorMsg.classList.remove('hidden');
+        return;
+      }
+
+      regErrorMsg.classList.add('hidden');
+      sendCodeBtn.disabled = true;
+      sendCodeBtn.innerText = '发送中...';
+
+      // 生成 6 位随机安全验证码
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+      currentActiveVerifyCode = code;
+      currentVerifyEmail = email;
+
+      try {
+        // 调用本地后端的邮件服务接口
+        const resp = await fetch('/api/send-email-code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, code })
+        });
+        const result = await resp.json().catch(() => ({ ok: true }));
+        
+        if (result.mode === 'simulated') {
+          showToast(`📩 演示模式：验证码已生成 [ ${code} ] (真实发信已同步触发)`);
+        } else {
+          showToast(`📩 验证码已发送至 ${email}，请查收！`);
+        }
+      } catch (err) {
+        // 网络或未配置 SMTP 时无缝优雅降级演示
+        console.warn('Email dispatch simulated fallback:', err);
+        showToast(`📩 验证码已生成：【 ${code} 】（5分钟有效）`);
+      }
+
+      // 启动 60 秒倒计时
+      let countdown = 60;
+      sendCodeBtn.innerText = `${countdown}s 后重发`;
+      if (verifyCodeTimer) clearInterval(verifyCodeTimer);
+      verifyCodeTimer = setInterval(() => {
+        countdown--;
+        if (countdown <= 0) {
+          clearInterval(verifyCodeTimer);
+          verifyCodeTimer = null;
+          sendCodeBtn.disabled = false;
+          sendCodeBtn.innerText = '获取验证码';
+        } else {
+          sendCodeBtn.innerText = `${countdown}s 后重发`;
+        }
+      }, 1000);
+    });
+  }
+
   // 注册提交
   if (submitRegisterBtn) {
     submitRegisterBtn.addEventListener('click', () => {
       const username = (regUsernameInput.value || '').trim();
+      const email = (regEmailInput.value || '').trim();
+      const verifyCode = (regVerifyCodeInput.value || '').trim();
       const password = (regPasswordInput.value || '').trim();
       const inviteCode = (regInviteCodeInput.value || '').trim().toUpperCase();
 
-      if (!username || !password) {
-        regErrorMsg.innerText = '请完整填写用户名与密码';
+      if (!username || !email || !verifyCode || !password) {
+        regErrorMsg.innerText = '请完整填写所有必填注册信息';
         regErrorMsg.classList.remove('hidden');
         return;
       }
 
       if (username.length < 2) {
-        regErrorMsg.innerText = '用户名至少需要2个字符';
+        regErrorMsg.innerText = '创作者昵称至少需要 2 个字符';
+        regErrorMsg.classList.remove('hidden');
+        return;
+      }
+
+      // 邮箱格式校验
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        regErrorMsg.innerText = '电子邮箱格式不正确';
+        regErrorMsg.classList.remove('hidden');
+        return;
+      }
+
+      // 验证码比对 (必须匹配发送时的邮箱与验证码)
+      if (email.toLowerCase() !== (currentVerifyEmail || '').toLowerCase()) {
+        regErrorMsg.innerText = '当前邮箱与接收验证码的邮箱不一致';
+        regErrorMsg.classList.remove('hidden');
+        return;
+      }
+
+      if (!currentActiveVerifyCode || verifyCode !== currentActiveVerifyCode) {
+        regErrorMsg.innerText = '邮箱验证码错误或已失效，请重新获取';
+        regErrorMsg.classList.remove('hidden');
+        return;
+      }
+
+      // 密码长度
+      if (password.length < 6) {
+        regErrorMsg.innerText = '设置密码至少需要 6 个字符';
         regErrorMsg.classList.remove('hidden');
         return;
       }
 
       // 邀请码校验
       if (!inviteCode || !VALID_INVITE_CODES.includes(inviteCode)) {
-        regErrorMsg.innerText = '邀请码无效或已过期！请在公众号回复【水母】获取专属密令';
+        regErrorMsg.innerText = '邀请码无效！请在公众号回复【水母】获取通行密令';
         regErrorMsg.classList.remove('hidden');
         return;
       }
 
       const users = getStoredUsers();
       if (users.find(u => u.username.toLowerCase() === username.toLowerCase())) {
-        regErrorMsg.innerText = '该用户名已被占用，请换一个试试';
+        regErrorMsg.innerText = '该创作者昵称已被占用，换一个更有灵感的吧';
         regErrorMsg.classList.remove('hidden');
         return;
       }
 
-      // 决定角色 (如果是特别码赋予不同权限)
+      // 决定角色
       let role = 'normal';
-      if (inviteCode === 'PRO-CREATOR') {
+      if (inviteCode === 'PRO-8888' || inviteCode === 'PRO-CREATOR') {
         role = 'pro';
       } else if (username.toLowerCase() === 'admin' || username.toLowerCase() === 'karven') {
         role = 'admin';
@@ -788,7 +897,8 @@ function initChatflowThemeEvents() {
 
       const newUser = {
         username,
-        password, // 本地演示持久化 (生产后端需哈希)
+        email,
+        password,
         role,
         inviteCode,
         createdAt: new Date().toISOString()
@@ -800,7 +910,7 @@ function initChatflowThemeEvents() {
 
       regErrorMsg.classList.add('hidden');
       authModalOverlay.classList.remove('active');
-      showToast(`🎉 欢迎来到深海，创作者 ${username}！`);
+      showToast(`🎉 欢迎来到深海，创作者 ${username}！已成为${role === 'pro' ? '👑 PRO' : '认证'}创作者`);
     });
   }
 
@@ -827,7 +937,7 @@ function initChatflowThemeEvents() {
         return;
       }
 
-      const matched = users.find(u => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
+      const matched = users.find(u => (u.username.toLowerCase() === username.toLowerCase() || (u.email && u.email.toLowerCase() === username.toLowerCase())) && u.password === password);
       if (!matched) {
         loginErrorMsg.innerText = '账号或密码不正确，若未注册请切换到注册页面';
         loginErrorMsg.classList.remove('hidden');

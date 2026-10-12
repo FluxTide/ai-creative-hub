@@ -6,7 +6,7 @@
   <title>水母的探索日记 · AI 创作资源库</title>
   <meta name="description" content="到处乱逛，顺便捡点有意思的东西 🪼 设计｜科技｜AI｜奇奇怪怪的小玩意">
   <link rel="icon" href="assets/avatar.png">
-  <link rel="stylesheet" href="style.css?v=20261011_49">
+  <link rel="stylesheet" href="style.css?v=20261011_50">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -266,15 +266,26 @@
           <input type="text" id="regUsername" placeholder="起一个好听的探索日记名字" required autocomplete="username">
         </div>
         <div class="auth-input-group">
+          <label>电子邮箱地址</label>
+          <input type="email" id="regEmail" placeholder="支持 QQ、163、Gmail 等常用邮箱" required autocomplete="email">
+        </div>
+        <div class="auth-input-group">
+          <label>邮箱验证码</label>
+          <div class="auth-verify-row">
+            <input type="text" id="regVerifyCode" placeholder="6 位邮件验证码" maxlength="6" required autocomplete="one-time-code">
+            <button type="button" id="sendCodeBtn" class="auth-send-code-btn">获取验证码</button>
+          </div>
+        </div>
+        <div class="auth-input-group">
           <label>设置密码</label>
           <input type="password" id="regPassword" placeholder="至少 6 位字母或数字" required autocomplete="new-password">
         </div>
         <div class="auth-input-group">
           <label>专属邀请通行码 <span class="auth-tip-pill">公众号回复【水母】自动获取</span></label>
-          <input type="text" id="regInviteCode" placeholder="如：JELLY-VIP" required>
+          <input type="text" id="regInviteCode" placeholder="如：JELLY-VIP 或 PRO-8888" required>
         </div>
         <div class="auth-error-msg hidden" id="regErrorMsg"></div>
-        <button type="button" id="submitRegisterBtn" class="auth-submit-btn">验证邀请码并完成注册</button>
+        <button type="button" id="submitRegisterBtn" class="auth-submit-btn">验证邮箱与邀请码并完成注册</button>
       </form>
     </div>
   </div>
@@ -285,6 +296,6 @@
   <script src="seaweed.js?v=20261011_42"></script>
   <script src="jellyfish.js?v=20261011_43"></script>
   <script src="data.js?v=20261011_24"></script>
-  <script src="app.js?v=20261011_49"></script>
+  <script src="app.js?v=20261011_53"></script>
 </body>
 </html>

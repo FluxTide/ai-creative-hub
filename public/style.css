@@ -1860,6 +1860,44 @@ html[data-mode="dark"] .auth-tabs-row {
   box-shadow: 0 0 0 3px rgba(217, 212, 229, 0.2);
 }
 
+.auth-verify-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.auth-verify-row input {
+  flex: 1;
+}
+
+.auth-send-code-btn {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(217, 212, 229, 0.4);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  min-width: 105px;
+  text-align: center;
+}
+
+.auth-send-code-btn:hover:not(:disabled) {
+  border-color: var(--morandi-purple);
+  color: var(--morandi-purple);
+  background: rgba(217, 212, 229, 0.12);
+  transform: translateY(-1px);
+}
+
+.auth-send-code-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .auth-error-msg {
   font-size: 12px;
   color: #ef4444;

@@ -1560,7 +1560,7 @@ html[data-mode="dark"] .chatflow-theme-card {
   left: 0;
   width: 100%;
   pointer-events: none;
-  z-index: 50; /* 高于卡片与常规内容，低于详情弹窗(200)与外观弹窗(9999) */
+  z-index: 0; /* 严格置于最底层背景，绝不覆盖在卡片与文字上方 */
 }
 
 .chatflow-setting-row {

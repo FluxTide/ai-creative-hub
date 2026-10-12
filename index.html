@@ -6,7 +6,7 @@
   <title>水母的探索日记 · AI 创作资源库</title>
   <meta name="description" content="到处乱逛，顺便捡点有意思的东西 🪼 设计｜科技｜AI｜奇奇怪怪的小玩意">
   <link rel="icon" href="assets/avatar.png">
-  <link rel="stylesheet" href="style.css?v=20261011_46">
+  <link rel="stylesheet" href="style.css?v=20261011_49">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -69,7 +69,7 @@
               <span>💼 商业合作</span>
             </button>
             <div id="authTriggerArea" class="auth-trigger-wrap">
-              <button id="loginBtn" class="auth-trigger-btn" title="登录/注册">
+              <button id="authTriggerBtn" class="auth-trigger-btn" title="登录/注册">
                 <span>🪼 登录 / 注册</span>
               </button>
               <div id="userProfileMenu" class="user-profile-badge hidden">
@@ -237,12 +237,12 @@
           <div class="chatflow-dialog-title" id="authModalTitle">🪼 创作者通行证</div>
           <div class="chatflow-dialog-subtitle" id="authModalSubtitle">关注公众号回复【水母】获取内测专属邀请码</div>
         </div>
-        <button id="authModalClose" class="chatflow-close-btn" title="关闭">✕</button>
+        <button id="closeAuthModalBtn" class="chatflow-close-btn" title="关闭">✕</button>
       </div>
 
       <div class="auth-tabs-row">
-        <button id="tabSwitchLogin" class="auth-tab-btn active">会员登录</button>
-        <button id="tabSwitchRegister" class="auth-tab-btn">邀请码注册</button>
+        <button id="tabLoginBtn" class="auth-tab-btn active">会员登录</button>
+        <button id="tabRegisterBtn" class="auth-tab-btn">邀请码注册</button>
       </div>
 
       <!-- 登录表单 -->
@@ -256,7 +256,7 @@
           <input type="password" id="loginPassword" placeholder="请输入密码" required autocomplete="current-password">
         </div>
         <div class="auth-error-msg hidden" id="loginErrorMsg"></div>
-        <button type="submit" class="auth-submit-btn">立即登录</button>
+        <button type="button" id="submitLoginBtn" class="auth-submit-btn">立即登录</button>
       </form>
 
       <!-- 注册表单 -->
@@ -274,7 +274,7 @@
           <input type="text" id="regInviteCode" placeholder="如：JELLY-VIP" required>
         </div>
         <div class="auth-error-msg hidden" id="regErrorMsg"></div>
-        <button type="submit" class="auth-submit-btn">验证邀请码并完成注册</button>
+        <button type="button" id="submitRegisterBtn" class="auth-submit-btn">验证邀请码并完成注册</button>
       </form>
     </div>
   </div>
@@ -285,6 +285,6 @@
   <script src="seaweed.js?v=20261011_42"></script>
   <script src="jellyfish.js?v=20261011_43"></script>
   <script src="data.js?v=20261011_24"></script>
-  <script src="app.js?v=20261011_46"></script>
+  <script src="app.js?v=20261011_49"></script>
 </body>
 </html>

@@ -639,8 +639,8 @@ function initChatflowThemeEvents() {
 
   const tabLoginBtn = document.getElementById('tabLoginBtn');
   const tabRegisterBtn = document.getElementById('tabRegisterBtn');
-  const loginFormContent = document.getElementById('loginFormContent');
-  const registerFormContent = document.getElementById('registerFormContent');
+  const loginFormContent = document.getElementById('loginForm');
+  const registerFormContent = document.getElementById('registerForm');
 
   const loginUsernameInput = document.getElementById('loginUsername');
   const loginPasswordInput = document.getElementById('loginPassword');

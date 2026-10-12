@@ -67,9 +67,11 @@ document.addEventListener('DOMContentLoaded', () => {
     emptyState.style.display = 'none';
     cardsGrid.innerHTML = filtered.map(item => {
       const isVideo = Boolean(item.video);
+      const isProItem = (item.id === 'AI-VID-008' || item.id === 'AI-VID-010' || item.category === 'workflow');
       return `
         <article class="work-card ${isVideo ? 'has-video' : ''}" data-id="${item.id}">
           <div class="card-media-wrap">
+            ${isProItem ? '<div class="pro-badge-corner">👑 PRO专享</div>' : ''}
             <img src="${item.cover}" alt="${item.title}" class="card-cover" loading="lazy">
             ${isVideo ? `
               <video class="card-video-preview" src="${item.video}" muted loop playsinline preload="none"></video>
@@ -214,6 +216,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // 区域 3：展示提示词（默认展示中文翻译版，若无则回退到英文/默认）
     const currentPromptText = item.promptZh || item.promptEn || item.prompt || '';
     const hasEnPrompt = !!(item.promptEn && item.promptZh);
+    const user = getCurrentUser();
+    const isProItem = (item.id === 'AI-VID-008' || item.id === 'AI-VID-010' || item.category === 'workflow');
+    const isLocked = isProItem && (!user || (user.role !== 'pro' && user.role !== 'admin'));
 
     const area3Html = `
       <div class="detail-area-prompt">
@@ -224,6 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <polyline points="8 6 2 12 8 18"></polyline>
             </svg>
             <span id="promptBoxLabel">完整提示词 (PROMPT)</span>
+            ${isProItem ? '<span class="user-role-tag pro" style="margin-left: 8px;">👑 PRO专享</span>' : ''}
           </div>
 
           <div style="display: flex; align-items: center; gap: 8px;">
@@ -234,16 +240,33 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
             ` : ''}
 
-            <button class="btn-copy-code" id="copyPromptBtn">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-              </svg>
-              <span>一键复制</span>
-            </button>
+            ${!isLocked ? `
+              <button class="btn-copy-code" id="copyPromptBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <span>一键复制</span>
+              </button>
+            ` : ''}
           </div>
         </div>
-        <pre class="prompt-code-wrap"><code id="promptCodeDisplay">${escapeHtml(currentPromptText)}</code></pre>
+
+        <div style="position: relative;">
+          ${isLocked ? `
+            <div class="prompt-locked-overlay">
+              <div style="font-size: 26px;">👑</div>
+              <div style="font-weight: 700; font-size: 15px; color: var(--text-primary);">PRO 创作者高阶专属资产</div>
+              <div style="font-size: 13px; color: var(--text-muted); max-width: 300px; line-height: 1.6;">
+                该作品包含完整高阶材质连线与工作流参数，仅限认证 PRO 会员查阅与一键复制。
+              </div>
+              <button class="auth-submit-btn" id="unlockProModalBtn" style="padding: 8px 20px; font-size: 13px; margin-top: 6px;">
+                ${user ? '✨ 升级 / 激活 PRO 权限' : '🔑 输入邀请码注册 / 登录'}
+              </button>
+            </div>
+          ` : ''}
+          <pre class="prompt-code-wrap" style="${isLocked ? 'filter: blur(8px); user-select: none; pointer-events: none;' : ''}"><code id="promptCodeDisplay">${escapeHtml(currentPromptText)}</code></pre>
+        </div>
 
         ${item.negativePrompt ? `
           <div class="prompt-box-header" style="margin-top: 18px;">
@@ -306,6 +329,16 @@ document.addEventListener('DOMContentLoaded', () => {
         navigator.clipboard.writeText(item.negativePrompt).then(() => {
           showToast('负向提示词已复制到剪贴板！');
         });
+      });
+    }
+
+    const unlockProModalBtn = document.getElementById('unlockProModalBtn');
+    if (unlockProModalBtn) {
+      unlockProModalBtn.addEventListener('click', () => {
+        const authModalOverlay = document.getElementById('authModalOverlay');
+        if (authModalOverlay) {
+          authModalOverlay.classList.add('active');
+        }
       });
     }
   }
@@ -592,6 +625,232 @@ function initChatflowThemeEvents() {
       }
     });
   }
+
+  // ----------------------------------------------------
+  // 用户认证与邀请码系统 (Auth & Invitation Code System)
+  // ----------------------------------------------------
+  const authModalOverlay = document.getElementById('authModalOverlay');
+  const authTriggerBtn = document.getElementById('authTriggerBtn');
+  const closeAuthModalBtn = document.getElementById('closeAuthModalBtn');
+  const userProfileBadge = document.getElementById('userProfileBadge');
+  const currentUserNameSpan = document.getElementById('currentUserName');
+  const currentUserRoleSpan = document.getElementById('currentUserRole');
+  const logoutBtn = document.getElementById('logoutBtn');
+
+  const tabLoginBtn = document.getElementById('tabLoginBtn');
+  const tabRegisterBtn = document.getElementById('tabRegisterBtn');
+  const loginFormContent = document.getElementById('loginFormContent');
+  const registerFormContent = document.getElementById('registerFormContent');
+
+  const loginUsernameInput = document.getElementById('loginUsername');
+  const loginPasswordInput = document.getElementById('loginPassword');
+  const submitLoginBtn = document.getElementById('submitLoginBtn');
+  const loginErrorMsg = document.getElementById('loginErrorMsg');
+
+  const regUsernameInput = document.getElementById('regUsername');
+  const regPasswordInput = document.getElementById('regPassword');
+  const regInviteCodeInput = document.getElementById('regInviteCode');
+  const submitRegisterBtn = document.getElementById('submitRegisterBtn');
+  const regErrorMsg = document.getElementById('regErrorMsg');
+
+  // 内置允许的通行邀请码列表 (可配置扩充)
+  const VALID_INVITE_CODES = ['JELLY2026', 'JELLY-VIP', 'SHUIMU888', 'PRO-CREATOR'];
+
+  // 用户数据初始化 (持久化在 localStorage)
+  function getStoredUsers() {
+    try {
+      return JSON.parse(localStorage.getItem('hub_users') || '[]');
+    } catch {
+      return [];
+    }
+  }
+
+  function saveStoredUsers(users) {
+    localStorage.setItem('hub_users', JSON.stringify(users));
+  }
+
+  function getCurrentUser() {
+    try {
+      return JSON.parse(localStorage.getItem('hub_current_user') || 'null');
+    } catch {
+      return null;
+    }
+  }
+
+  function setCurrentUser(user) {
+    if (user) {
+      localStorage.setItem('hub_current_user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('hub_current_user');
+    }
+    renderAuthUI();
+  }
+
+  function renderAuthUI() {
+    const user = getCurrentUser();
+    if (user) {
+      if (authTriggerBtn) authTriggerBtn.classList.add('hidden');
+      if (userProfileBadge) {
+        userProfileBadge.classList.remove('hidden');
+        if (currentUserNameSpan) currentUserNameSpan.innerText = user.username;
+        if (currentUserRoleSpan) {
+          currentUserRoleSpan.innerText = user.role === 'admin' ? '站长' : (user.role === 'pro' ? 'PRO会员' : '创作者');
+          currentUserRoleSpan.className = `user-role-tag ${user.role || 'normal'}`;
+        }
+      }
+    } else {
+      if (authTriggerBtn) authTriggerBtn.classList.remove('hidden');
+      if (userProfileBadge) userProfileBadge.classList.add('hidden');
+    }
+  }
+
+  // 弹窗显隐与 Tab 切换
+  if (authTriggerBtn && authModalOverlay) {
+    authTriggerBtn.addEventListener('click', () => {
+      authModalOverlay.classList.add('active');
+      if (loginErrorMsg) loginErrorMsg.classList.add('hidden');
+      if (regErrorMsg) regErrorMsg.classList.add('hidden');
+    });
+  }
+
+  if (closeAuthModalBtn && authModalOverlay) {
+    closeAuthModalBtn.addEventListener('click', () => {
+      authModalOverlay.classList.remove('active');
+    });
+  }
+
+  if (authModalOverlay) {
+    authModalOverlay.addEventListener('click', (e) => {
+      if (e.target === authModalOverlay) {
+        authModalOverlay.classList.remove('active');
+      }
+    });
+  }
+
+  if (tabLoginBtn && tabRegisterBtn) {
+    tabLoginBtn.addEventListener('click', () => {
+      tabLoginBtn.classList.add('active');
+      tabRegisterBtn.classList.remove('active');
+      loginFormContent.classList.remove('hidden');
+      registerFormContent.classList.add('hidden');
+      if (loginErrorMsg) loginErrorMsg.classList.add('hidden');
+    });
+
+    tabRegisterBtn.addEventListener('click', () => {
+      tabRegisterBtn.classList.add('active');
+      tabLoginBtn.classList.remove('active');
+      registerFormContent.classList.remove('hidden');
+      loginFormContent.classList.add('hidden');
+      if (regErrorMsg) regErrorMsg.classList.add('hidden');
+    });
+  }
+
+  // 注册提交
+  if (submitRegisterBtn) {
+    submitRegisterBtn.addEventListener('click', () => {
+      const username = (regUsernameInput.value || '').trim();
+      const password = (regPasswordInput.value || '').trim();
+      const inviteCode = (regInviteCodeInput.value || '').trim().toUpperCase();
+
+      if (!username || !password) {
+        regErrorMsg.innerText = '请完整填写用户名与密码';
+        regErrorMsg.classList.remove('hidden');
+        return;
+      }
+
+      if (username.length < 2) {
+        regErrorMsg.innerText = '用户名至少需要2个字符';
+        regErrorMsg.classList.remove('hidden');
+        return;
+      }
+
+      // 邀请码校验
+      if (!inviteCode || !VALID_INVITE_CODES.includes(inviteCode)) {
+        regErrorMsg.innerText = '邀请码无效或已过期！请在公众号回复【水母】获取专属密令';
+        regErrorMsg.classList.remove('hidden');
+        return;
+      }
+
+      const users = getStoredUsers();
+      if (users.find(u => u.username.toLowerCase() === username.toLowerCase())) {
+        regErrorMsg.innerText = '该用户名已被占用，请换一个试试';
+        regErrorMsg.classList.remove('hidden');
+        return;
+      }
+
+      // 决定角色 (如果是特别码赋予不同权限)
+      let role = 'normal';
+      if (inviteCode === 'PRO-CREATOR') {
+        role = 'pro';
+      } else if (username.toLowerCase() === 'admin' || username.toLowerCase() === 'karven') {
+        role = 'admin';
+      }
+
+      const newUser = {
+        username,
+        password, // 本地演示持久化 (生产后端需哈希)
+        role,
+        inviteCode,
+        createdAt: new Date().toISOString()
+      };
+
+      users.push(newUser);
+      saveStoredUsers(users);
+      setCurrentUser(newUser);
+
+      regErrorMsg.classList.add('hidden');
+      authModalOverlay.classList.remove('active');
+      showToast(`🎉 欢迎来到深海，创作者 ${username}！`);
+    });
+  }
+
+  // 登录提交
+  if (submitLoginBtn) {
+    submitLoginBtn.addEventListener('click', () => {
+      const username = (loginUsernameInput.value || '').trim();
+      const password = (loginPasswordInput.value || '').trim();
+
+      if (!username || !password) {
+        loginErrorMsg.innerText = '请输入账号和密码';
+        loginErrorMsg.classList.remove('hidden');
+        return;
+      }
+
+      const users = getStoredUsers();
+      // 内置一个初始体验账号供未注册时无缝体验
+      if (username === 'admin' && password === '123456') {
+        const adminUser = { username: '站长水母', role: 'admin' };
+        setCurrentUser(adminUser);
+        loginErrorMsg.classList.add('hidden');
+        authModalOverlay.classList.remove('active');
+        showToast('👑 站长管理员身份已激活！');
+        return;
+      }
+
+      const matched = users.find(u => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
+      if (!matched) {
+        loginErrorMsg.innerText = '账号或密码不正确，若未注册请切换到注册页面';
+        loginErrorMsg.classList.remove('hidden');
+        return;
+      }
+
+      setCurrentUser(matched);
+      loginErrorMsg.classList.add('hidden');
+      authModalOverlay.classList.remove('active');
+      showToast(`✨ 欢迎回来，${matched.username}！`);
+    });
+  }
+
+  // 退出登录
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      setCurrentUser(null);
+      showToast('已退出登录状态');
+    });
+  }
+
+  // 初始化认证状态
+  renderAuthUI();
 
   // 模式切换按钮
   ['light', 'dark', 'system'].forEach(m => {

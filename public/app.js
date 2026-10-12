@@ -19,10 +19,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 统计数量更新
   function updateCounts() {
-    document.getElementById('countAll').innerText = CREATIVE_WORKS.length;
-    document.getElementById('countVideo').innerText = CREATIVE_WORKS.filter(w => w.category === 'video').length;
-    document.getElementById('countImage').innerText = CREATIVE_WORKS.filter(w => w.category === 'image').length;
-    document.getElementById('countWorkflow').innerText = CREATIVE_WORKS.filter(w => w.category === 'workflow').length;
+    const total = CREATIVE_WORKS.length;
+    const videoCount = CREATIVE_WORKS.filter(w => w.category === 'video').length;
+    const imageCount = CREATIVE_WORKS.filter(w => w.category === 'image').length;
+    const workflowCount = CREATIVE_WORKS.filter(w => w.category === 'workflow').length;
+    const commercialCount = CREATIVE_WORKS.filter(w => w.category === 'commercial').length;
+
+    const setCountText = (elId, count) => {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      if (count === 0) {
+        el.innerText = '即将上架';
+        el.classList.add('count-empty');
+      } else {
+        el.innerText = count;
+        el.classList.remove('count-empty');
+      }
+    };
+
+    setCountText('countAll', total);
+    setCountText('countVideo', videoCount);
+    setCountText('countImage', imageCount);
+    setCountText('countWorkflow', workflowCount);
+    setCountText('countCommercial', commercialCount);
   }
 
   // 渲染作品卡片流
@@ -545,6 +564,31 @@ function initChatflowThemeEvents() {
     modalOverlay.addEventListener('click', (e) => {
       if (e.target === modalOverlay) {
         modalOverlay.classList.remove('active');
+      }
+    });
+  }
+
+  // 商业合作弹窗逻辑
+  const commercialOverlay = document.getElementById('commercialModalOverlay');
+  const commercialBtn = document.getElementById('commercialBtn');
+  const closeCommercialBtn = document.getElementById('closeCommercialModalBtn');
+
+  if (commercialBtn && commercialOverlay) {
+    commercialBtn.addEventListener('click', () => {
+      commercialOverlay.classList.add('active');
+    });
+  }
+
+  if (closeCommercialBtn && commercialOverlay) {
+    closeCommercialBtn.addEventListener('click', () => {
+      commercialOverlay.classList.remove('active');
+    });
+  }
+
+  if (commercialOverlay) {
+    commercialOverlay.addEventListener('click', (e) => {
+      if (e.target === commercialOverlay) {
+        commercialOverlay.classList.remove('active');
       }
     });
   }

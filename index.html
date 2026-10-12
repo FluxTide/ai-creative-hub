@@ -6,7 +6,7 @@
   <title>水母的探索日记 · AI 创作资源库</title>
   <meta name="description" content="到处乱逛，顺便捡点有意思的东西 🪼 设计｜科技｜AI｜奇奇怪怪的小玩意">
   <link rel="icon" href="assets/avatar.png">
-  <link rel="stylesheet" href="style.css?v=20261011_42">
+  <link rel="stylesheet" href="style.css?v=20261011_44">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -65,6 +65,9 @@
               <span id="themeTriggerLabel">云上舞白</span>
               <span style="font-size: 12px; opacity: 0.7;">⚙️</span>
             </button>
+            <button id="commercialBtn" class="commercial-trigger-btn" title="商业合作 & 赞助">
+              <span>💼 商业合作</span>
+            </button>
           </div>
           <div class="stats-pill">
             <span class="dot"></span> 持续收录完整提示词 & 工作流
@@ -80,6 +83,7 @@
         <button class="tab-btn" data-category="video">赛博小玩具 <span class="count" id="countVideo">0</span></button>
         <button class="tab-btn" data-category="image">灵感画报 <span class="count" id="countImage">0</span></button>
         <button class="tab-btn" data-category="workflow">魔法工作流 <span class="count" id="countWorkflow">0</span></button>
+        <button class="tab-btn" data-category="commercial">商业定制 <span class="count" id="countCommercial">0</span></button>
       </div>
 
       <div class="search-wrap">
@@ -177,12 +181,45 @@
     </div>
   </div>
 
+  <!-- 商业合作 / 赞助弹窗 Modal -->
+  <div id="commercialModalOverlay" class="chatflow-modal-overlay">
+    <div class="chatflow-modal-card" style="max-width: 460px;">
+      <div class="chatflow-modal-header">
+        <div>
+          <h3 class="chatflow-modal-title">💼 商业合作 & 创意定制</h3>
+          <p class="chatflow-modal-subtitle">水母的探索日记 · 专注 AI 创意设计与 Web3D 互动体验</p>
+        </div>
+        <button id="closeCommercialModalBtn" class="chatflow-modal-close" aria-label="关闭">✕</button>
+      </div>
+
+      <div class="commercial-content" style="padding: 12px 0; display: flex; flex-direction: column; gap: 14px;">
+        <div style="background: rgba(255,255,255,0.04); border-radius: 12px; padding: 14px; border: 1px solid rgba(255,255,255,0.08);">
+          <div style="font-weight: 600; font-size: 14px; margin-bottom: 6px; color: var(--text-primary);">✨ 承接业务范围</div>
+          <ul style="font-size: 12px; color: var(--text-secondary); line-height: 1.8; margin: 0; padding-left: 18px;">
+            <li>企业/品牌 3D WebGL / WebGPU 网页互动定制</li>
+            <li>小红书爆款视觉 IP / 3D 毛绒质感系列素材商用授权</li>
+            <li>Midjourney / ComfyUI 商业工作流私有化部署与咨询</li>
+            <li>AI 创意短视频制作与视觉方案定制</li>
+          </ul>
+        </div>
+
+        <div style="background: rgba(217, 212, 229, 0.08); border-radius: 12px; padding: 14px; border: 1px solid rgba(217, 212, 229, 0.15);">
+          <div style="font-weight: 600; font-size: 13px; margin-bottom: 6px; color: var(--morandi-purple);">📬 商务联系</div>
+          <p style="font-size: 12px; color: var(--text-secondary); margin: 0; line-height: 1.6;">
+            小红书私信：<strong>水母的探索日记</strong><br>
+            商务合作请备注【项目名称 + 需求简述 + 预算预期】
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast 提示条 -->
   <div class="toast" id="toast">复制成功！</div>
 
   <script src="seaweed.js?v=20261011_42"></script>
   <script src="jellyfish.js?v=20261011_43"></script>
   <script src="data.js?v=20261011_24"></script>
-  <script src="app.js?v=20261011_24"></script>
+  <script src="app.js?v=20261011_44"></script>
 </body>
 </html>

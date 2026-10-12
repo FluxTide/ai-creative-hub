@@ -475,6 +475,37 @@ body {
   border-radius: 10px;
 }
 
+.tab-btn .count.count-empty {
+  font-size: 10px;
+  opacity: 0.75;
+  background: rgba(217, 212, 229, 0.15);
+  color: var(--morandi-purple);
+  padding: 1px 6px;
+  letter-spacing: 0.5px;
+}
+
+.commercial-trigger-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(217, 212, 229, 0.25);
+  background: rgba(217, 212, 229, 0.08);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.commercial-trigger-btn:hover {
+  background: rgba(217, 212, 229, 0.18);
+  border-color: var(--morandi-purple);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
 .tab-btn:hover {
   color: var(--text-primary);
 }

@@ -38,14 +38,15 @@
     resizeObserver.observe(document.body);
   }
 
-  // 2. 鼠标长按与点击（支持页面滚动偏移）
+  // 鼠标追踪与长按计时 (0=左键, 1=中键/滚轮按下)
   const mouse = {
-    x: -2000,
-    y: -2000,
+    x: -1000,
+    y: -1000,
     isDown: false,
+    button: 0, // 0: 左键(全图召唤聚集), 1: 中键(星系环绕转圈)
     downStartTime: 0,
-    downX: -2000,
-    downY: -2000
+    downX: -1000,
+    downY: -1000
   };
 
   // 3. 浮游食物系统
@@ -277,16 +278,50 @@
             }
           }
         } else if (mouse.isDown && mouse.x > 0) {
-          // D. 鼠标长按：温柔伴游
+          // D. 鼠标交互模式：根据按键判定【长按左键聚集】或【长按中键转圈】
           const mDist = Math.hypot(mouse.x - this.x, mouse.y - this.y);
-          if (mDist < 800) {
+
+          if (mouse.button === 1) {
+            // ================================================================
+            // 【长按中键】：星系旋涡 / 围绕按住的点优雅转圈 (Orbit Vortex)
+            // ================================================================
+            const toMouseAngle = Math.atan2(mouse.y - this.y, mouse.x - this.x);
+            // 切线旋转方向 (逆时针公转)
+            const tangentAngle = toMouseAngle + Math.PI / 2;
+            
+            // 期望轨道半径 (根据水母体型分层错开，避免全部挤在同一个圆环上)
+            const targetOrbitRadius = 90 + (this.stage === 'baby' ? 0 : (this.stage === 'teen' ? 30 : 65));
+            
+            // 径向修正力：太远则向内拉，太近则向外推
+            const radialError = mDist - targetOrbitRadius;
+            const radialForce = Math.max(-0.4, Math.min(0.4, radialError * 0.005));
+
+            // 合成航向：切线旋转分量 + 径向收敛分量
+            this.targetAngle = Math.atan2(
+              Math.sin(tangentAngle) * 0.75 + Math.sin(toMouseAngle) * radialForce,
+              Math.cos(tangentAngle) * 0.75 + Math.cos(toMouseAngle) * radialForce
+            );
+
+            // 施加环绕轨道速度
+            const orbitSpeed = (this.stage === 'baby' ? 0.28 : (this.stage === 'teen' ? 0.22 : 0.18));
+            this.vx += Math.cos(this.targetAngle) * orbitSpeed;
+            this.vy += Math.sin(this.targetAngle) * orbitSpeed;
+
+          } else {
+            // ================================================================
+            // 【长按左键】：全图召唤 / 深海引力波聚集 (Global Summon Seek)
+            // ================================================================
             this.targetAngle = Math.atan2(mouse.y - this.y, mouse.x - this.x);
-            if (mDist > this.radius * 2.2) {
-              this.vx += Math.cos(this.targetAngle) * 0.18;
-              this.vy += Math.sin(this.targetAngle) * 0.18;
+            
+            // 距离大于社交缓冲圈时，积极靠近游过来
+            if (mDist > this.radius * 2.6) {
+              const summonSpeed = (this.stage === 'baby' ? 0.26 : (this.stage === 'teen' ? 0.20 : 0.16));
+              this.vx += Math.cos(this.targetAngle) * summonSpeed;
+              this.vy += Math.sin(this.targetAngle) * summonSpeed;
             } else {
-              this.vx *= 0.88;
-              this.vy *= 0.88;
+              // 已游到光标手心附近：轻柔刹车并环伺悬停
+              this.vx *= 0.82;
+              this.vy *= 0.82;
             }
           }
         } else {
@@ -685,15 +720,21 @@
   }
 
   // ============================================================================
-  // 8. 全局用户交互监听 (点击受惊 / 投喂 / 长按)
+  // 8. 全局用户交互监听 (点击受惊 / 投喂 / 长按左键聚集 / 长按中键转圈)
   // ============================================================================
   window.addEventListener('mousedown', (e) => {
     // 忽略在弹窗或按钮上的点击
     if (e.target.closest('.chatflow-modal-overlay, button, input, a, .work-detail-view')) return;
 
+    // 针对鼠标中键按下，阻止默认的滚轮自动滚动图标 (Auto-scroll)
+    if (e.button === 1) {
+      e.preventDefault();
+    }
+
     const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
     mouse.x = e.clientX;
     mouse.y = e.clientY + scrollY; // 映射至网页绝对坐标
+    mouse.button = e.button; // 记录按键类型 (0: 左键, 1: 中键)
     mouse.isDown = true;
     mouse.downStartTime = performance.now();
     mouse.downX = mouse.x;
@@ -729,8 +770,8 @@
       }
     }
 
-    // B. 若未点击在水母上且为短按 -> 投喂浮游食物
-    if (!clickedJelly && pressDuration < 320) {
+    // B. 若未点击在水母上且为短按左键 -> 投喂浮游食物
+    if (mouse.button === 0 && !clickedJelly && pressDuration < 320) {
       if (!e.target.closest('.chatflow-modal-overlay, button, input, a, .work-detail-view, .work-card')) {
         spawnFood(upX, upY);
       }

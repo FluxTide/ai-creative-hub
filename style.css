@@ -1770,6 +1770,47 @@ html[data-mode="dark"] .chatflow-theme-card {
   text-align: center;
 }
 
+/* ── PullCord 天花板复古拉绳主题开关 ──────────────────────── */
+.pullcord-wrapper {
+  transition: opacity 0.3s ease;
+}
+
+.pullcord-inner {
+  position: absolute;
+  inset: 0;
+}
+
+.pullcord-inner--drop {
+  animation: pullcord-drop 0.8s 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes pullcord-drop {
+  0% {
+    opacity: 0;
+    transform: translateY(-240px);
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+#pc-knob-hit:hover + svg #pc-knob-core,
+#pc-knob-hit:hover ~ svg #pc-knob-core {
+  filter: brightness(1.25);
+  transform: scale(1.15);
+}
+
+@media (max-width: 768px) {
+  .pullcord-wrapper {
+    right: 8px !important;
+    transform: scale(0.85);
+    transform-origin: top right;
+  }
+}
+
 /* 认证弹窗专属 (跟随 7-Theme Morandi 变量切换) */
 .auth-dialog {
   background: var(--bg-surface);

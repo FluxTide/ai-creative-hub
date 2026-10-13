@@ -976,6 +976,30 @@ function initChatflowThemeEvents() {
     }
   });
 
+  // ── PullCord 复古天花板拉绳组件初始化 ──
+  if (window.PullCord) {
+    new window.PullCord({
+      top: '0px',
+      right: '24px',
+      zIndex: 85,
+      onPull: () => {
+        // 轮播切换到下一个主题
+        const currentIdx = CHATFLOW_THEMES.findIndex(t => t.id === currentThemeId);
+        const nextIdx = (currentIdx + 1) % CHATFLOW_THEMES.length;
+        const nextTheme = CHATFLOW_THEMES[nextIdx];
+
+        currentThemeId = nextTheme.id;
+        localStorage.setItem('cf_theme_id', nextTheme.id);
+        applyChatflowThemeDOM();
+
+        // 提示与微光反馈
+        if (typeof showToast === 'function') {
+          showToast(`🪼 拉绳切换：已切至「${nextTheme.name}」色调`);
+        }
+      }
+    });
+  }
+
   // 初始应用
   applyChatflowThemeDOM();
 }

@@ -1,3 +1,12 @@
+// 获取当前已登录用户（全局共享）
+function getHubCurrentUser() {
+  try {
+    return JSON.parse(localStorage.getItem('hub_current_user') || 'null');
+  } catch {
+    return null;
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const cardsGrid = document.getElementById('cardsGrid');
   const emptyState = document.getElementById('emptyState');
@@ -117,13 +126,15 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // 点击打开详情抽屉
-    document.querySelectorAll('.work-card').forEach(card => {
-      card.addEventListener('click', () => {
-        const id = card.getAttribute('data-id');
+    // 点击打开详情抽屉（事件代理到 cardsGrid，保证无论何时点击均稳定捕获）
+    cardsGrid.onclick = (e) => {
+      const card = e.target.closest('.work-card');
+      if (!card) return;
+      const id = card.getAttribute('data-id');
+      if (id) {
         openDetail(id);
-      });
-    });
+      }
+    };
   }
 
   function escapeHtml(str) {
@@ -216,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 区域 3：展示提示词（默认展示中文翻译版，若无则回退到英文/默认）
     const currentPromptText = item.promptZh || item.promptEn || item.prompt || '';
     const hasEnPrompt = !!(item.promptEn && item.promptZh);
-    const user = getCurrentUser();
+    const user = getHubCurrentUser();
     const isProItem = (item.id === 'AI-VID-008' || item.id === 'AI-VID-010' || item.category === 'workflow');
     const isLocked = isProItem && (!user || (user.role !== 'pro' && user.role !== 'admin'));
 

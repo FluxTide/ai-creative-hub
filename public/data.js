@@ -9,7 +9,7 @@ const CREATIVE_WORKS = [
     desc: "使用原生 Three.js + WebGL 搭建的 3D 毛绒小水母微缩玩具交互系统，包含粉萌波点伞帽、慢速脉动心跳力学、柔性触手随动摆动与手指引力拖拽交互。",
     tools: ["Claude Opus 5.5", "Three.js / WebGL", "Physics Engine"],
     tags: ["小水母", "3D 互动", "毛绒水母", "Three.js", "Web3D", "触手力学", "水母"],
-    recommend: true,
+    recommend: "精选",
     promptEn: `Build an interactive 3D Web diorama: 'Plush Jellyfish' — a single self-contained HTML page using Three.js/WebGL with dynamic soft-body and cloth physics simulation.
 
 - Concept: MATERIAL STUDIES / NO. 013 — "A puff of mushy on a slow heartbeat, trailing plush tentacles through still air. Lend it a finger."
@@ -54,7 +54,7 @@ Self-contained HTML file, responsive, running at 60fps.`,
     desc: "使用原生 WebGPU + WGSL 模拟的马尔代夫果冻海微缩景观交互系统，包含水上木屋群、巡航水上飞机、珊瑚礁鱼群与流体动力学交互。",
     tools: ["Claude Opus 5.5", "GPT-6 Astra", "WebGPU / WGSL", "Three.js"],
     tags: ["3D 互动", "果冻海", "WebGPU", "Claude 5.5", "GPT-6"],
-    recommend: true,
+    recommend: "精选",
     promptEn: `Build "Atoll Jelly" — a single self-contained HTML file featuring a tiny Maldives-style sandbar diorama with crystalline water rendered entirely in WebGPU + WGSL.
 
 Key scene requirements:
@@ -97,7 +97,7 @@ Everything packed into one clean, zero-dependency HTML document with responsive 
     desc: "使用原生 Three.js + WebGL 搭建的 3D 毛绒小鲨鱼微缩玩具交互系统，包含手工缝线布料材质、柔性摆动尾巴、多维抚摸戳碰工具与物理动力学交互。",
     tools: ["Claude Opus 5.5", "GPT-6 Astra", "Three.js / WebGL", "Physics Engine"],
     tags: ["3D 互动", "模型对比", "Three.js", "小鲨鱼", "毛绒鲨鱼", "Web3D"],
-    recommend: true,
+    recommend: "精选",
     promptEn: `Build an interactive 3D Web diorama: 'Plush Shark' — a single self-contained HTML page using Three.js/WebGL with physical interactions.
 
 Features:
@@ -138,7 +138,7 @@ Features:
     desc: "使用原生 Three.js + WebGL 搭建的 3D 毛绒小螃蟹微缩玩具交互系统，包含柔软双螯、内置金属丝折弯八足、眼柄力学追踪与物理动力学抓捏交互。",
     tools: ["Claude Opus 5.5", "Claude Sonnet 5.5", "Three.js / WebGL", "Physics Engine"],
     tags: ["3D 互动", "模型对比", "Three.js", "小螃蟹", "毛绒螃蟹", "Web3D"],
-    recommend: true,
+    recommend: "精选",
     promptEn: `Build an interactive 3D Web diorama: 'Plush Crab' — a single self-contained HTML page using Three.js/WebGL with physical interactions.
 
 Features:
@@ -177,7 +177,7 @@ Features:
     desc: "使用原生 Three.js + WebGL 搭建的 3D 果冻锦鲤池塘微缩交互系统，包含高透软体水质物理、荷叶青蛙共振、锦鲤游弋动力学与拖拽拉伸微交互。",
     tools: ["Claude Opus 5.5", "GPT-6 Astra", "Three.js / WebGL", "Soft-Body Physics"],
     tags: ["3D 互动", "模型对比", "Three.js", "青蛙池塘", "果冻池塘", "软体物理"],
-    recommend: true,
+    recommend: "精选",
     promptEn: `Build an interactive 3D Web diorama: 'Jelly Koi Pond' — a single self-contained HTML page using Three.js/WebGL and soft-body spring physics.
 
 Features & Requirements:
@@ -218,7 +218,7 @@ Features & Requirements:
     desc: "使用原生 Three.js + WebGL 搭建的 3D 毛绒双髻锤头鲨微缩交互系统，包含独特的锤形头部两极力学、柔性 S 形摆动躯干、多种梳理抚摸工具与两极眼部视线追踪交互。",
     tools: ["Claude Opus 5.5", "GPT-6 Astra", "Three.js / WebGL", "Physics Engine"],
     tags: ["3D 互动", "模型对比", "Three.js", "锤头鲨", "毛绒鲨鱼", "双髻鲨", "Web3D"],
-    recommend: true,
+    recommend: "精选",
     promptEn: `Build an interactive 3D Web diorama: 'Plush Hammerhead' — a single self-contained HTML page using Three.js/WebGL with physical interactions.
 
 Features:
@@ -257,7 +257,7 @@ Features:
     desc: "使用原生 Three.js + WebGL 搭建的 3D 果冻海盗岛微缩交互系统，包含巨型骷髅岩洞、海盗帆船动力学、地层截面剖切与多维波浪流体交互。",
     tools: ["Claude Opus 5.5", "GPT-6 Astra", "Three.js / WebGL", "Physics Engine"],
     tags: ["3D 互动", "模型对比", "Three.js", "海盗岛", "果冻岛", "海盗船", "Web3D"],
-    recommend: true,
+    recommend: "精选",
     promptEn: `Build an interactive 3D Web diorama: 'Pirate Jelly' — a single self-contained HTML page using Three.js/WebGL with dynamic fluid simulation and physics.
 
 [Visual Concept]
@@ -295,7 +295,7 @@ Features:
     desc: "使用原生 Three.js + WebGL 搭建的 3D 毛绒奶牛微缩交互系统，包含独特的粉色履带驱动轮、柔软蓬松绒毛纤维、物理揉捏按压与倒地回正动力学交互。",
     tools: ["Claude Opus 5.5", "Three.js / WebGL", "Soft-body Physics", "Shader Fur"],
     tags: ["3D 互动", "Three.js", "奶牛跑跑", "毛绒奶牛", "动力学", "玩具交互", "Web3D"],
-    recommend: true,
+    recommend: "精选",
     promptEn: `Build an interactive 3D Web toy specimen: 'Plush Cow' (Material Studies / No. 029) — a single self-contained HTML page using Three.js/WebGL and physics.
 
 [Concept & Character]
@@ -336,7 +336,7 @@ Features:
     desc: "使用原生 Three.js + WebGL 搭建的 3D 果冻浮岛城堡微缩交互系统，包含粉蓝尖顶童话城堡、崖壁断层流体瀑布、巡航帆船水波与多层地质切片微缩景观。",
     tools: ["Claude Opus 5.5", "GPT-6 Astra", "Three.js / WebGL", "Fluid Dynamics"],
     tags: ["3D 互动", "模型对比", "Three.js", "果冻城堡", "浮岛城堡", "童话城堡", "Web3D"],
-    recommend: true,
+    recommend: "精选",
     promptEn: `Build an interactive 3D Web diorama: 'Castle Jelly' — a single self-contained HTML page using Three.js/WebGL with dynamic waterfall fluid physics.
 
 [Visual Concept]

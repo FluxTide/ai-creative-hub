@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>水母的探索日记 · AI 创作资源库</title>
+  <meta name="description" content="到处乱逛，顺便捡点有意思的东西 🪼 设计｜科技｜AI｜奇奇怪怪的小玩意">
+  <link rel="icon" href="assets/avatar.png">
+  <link rel="stylesheet" href="style.css?v=20261011_54">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- 陪伴水母背景 Canvas (穿透点击，不影响卡片交互) -->
+  <canvas id="jellyfishCanvas"></canvas>
+  <!-- 背景氛围光效 -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <!-- 主容器 -->
+  <div class="app-container">
+    
+    <!-- 顶部 Banner 与 个人品牌区 -->
+    <header class="hero-section">
+      <div class="banner-wrapper" id="bannerWrapper">
+        <div class="banner-3d-scene" id="banner3dScene">
+          <img src="assets/banner.png" alt="梦幻水母创意工作室" class="banner-img" id="bannerImg">
+          <div class="banner-overlay"></div>
+        </div>
+      </div>
+
+      <div class="profile-card">
+        <!-- 3. 头像与 2. 蓝色框信息区域：自然居左下放，不压背景 -->
+        <div class="profile-card-left">
+          <div class="avatar-wrapper">
+            <img src="assets/avatar.png" alt="水母头像" class="avatar-img">
+            <span class="online-badge" title="持续更新中">🪼</span>
+          </div>
+
+          <div class="profile-info">
+            <div class="profile-title-row">
+              <h1 class="account-name">水母的探索日记</h1>
+              <span class="account-tag">AI Creator & Explorer</span>
+            </div>
+            
+            <div class="profile-bio">
+              <p class="bio-line-main">到处逛逛，顺便捡点有意思的东西 🪼</p>
+              <p class="bio-line-sub">设计 ｜ 科技 ｜ AI ｜ 奇奇怪怪的小玩意</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1. 红色框按钮区：全部右对齐放置在绿色卡片右侧 -->
+        <div class="profile-actions">
+          <div class="profile-buttons-row">
+            <a href="https://www.xiaohongshu.com/user/profile/5e966e0b000000000100b70e" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/>
+              </svg>
+              前往小红书主页
+            </a>
+            <button id="themeTriggerBtn" class="theme-trigger-btn" title="外观设置">
+              <span id="themeTriggerDot" class="theme-trigger-dot" style="background: #8B7355;"></span>
+              <span id="themeTriggerLabel">云上舞白</span>
+              <span style="font-size: 12px; opacity: 0.7;">⚙️</span>
+            </button>
+            <button id="commercialBtn" class="commercial-trigger-btn" title="商业合作 & 赞助">
+              <span>💼 商业合作</span>
+            </button>
+            <div id="authTriggerArea" class="auth-trigger-wrap">
+              <button id="authTriggerBtn" class="auth-trigger-btn" title="登录/注册">
+                <span>🪼 登录 / 注册</span>
+              </button>
+              <div id="userProfileMenu" class="user-profile-badge hidden">
+                <span class="user-avatar-dot"></span>
+                <span id="userNameLabel" class="user-name-text">创作者</span>
+                <span id="userRoleTag" class="user-role-tag">普通会员</span>
+                <button id="logoutBtn" class="logout-mini-btn" title="退出登录">退出</button>
+              </div>
+            </div>
+          </div>
+          <div class="stats-pill">
+            <span class="dot"></span> 持续收录完整提示词 & 工作流
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 导航栏与筛选控制 -->
+    <section class="controls-section">
+      <div class="tabs-group" id="categoryTabs">
+        <button class="tab-btn active" data-category="all">全部作品 <span class="count" id="countAll">0</span></button>
+        <button class="tab-btn" data-category="video">赛博小玩具 <span class="count" id="countVideo">0</span></button>
+        <button class="tab-btn" data-category="image">灵感画报 <span class="count" id="countImage">0</span></button>
+        <button class="tab-btn" data-category="workflow">魔法工作流 <span class="count" id="countWorkflow">0</span></button>
+        <button class="tab-btn" data-category="commercial">商业定制 <span class="count" id="countCommercial">0</span></button>
+      </div>
+
+      <div class="search-wrap">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="searchInput" placeholder="搜索作品、提示词关键词、工具..." autocomplete="off">
+      </div>
+    </section>
+
+    <!-- 作品网格（对标 sael.net 交互卡片） -->
+    <main class="grid-section">
+      <div class="cards-grid" id="cardsGrid">
+        <!-- 由 JavaScript 动态渲染作品卡片 -->
+      </div>
+      <div class="empty-state" id="emptyState" style="display: none;">
+        <div class="empty-emoji">🫧</div>
+        <p>没有找到相关作品，试试换个关键词吧</p>
+      </div>
+    </main>
+
+    <!-- 极简页脚 -->
+    <footer class="app-footer">
+      <div class="footer-content">
+        <p>© 2026 水母的探索日记 · 作品与提示词开放资源库</p>
+        <p class="footer-tip">点击卡片可查看完整正负提示词、高清视频演示与体验工具直达</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- 整页作品详情视图（按四个区域专属排版） -->
+  <div class="work-detail-view" id="workDetailView">
+    <!-- 区域 4：左上角直接返回主页面 -->
+    <header class="detail-nav-bar">
+      <button class="detail-back-btn" id="detailBackBtn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        <span>返回主页</span>
+      </button>
+      <div class="detail-nav-title" id="detailNavTitle">作品详情</div>
+    </header>
+
+    <div class="detail-grid-layout" id="detailGridLayout">
+      <!-- 动态插入：区域1（左侧视频）、区域2（右侧链接）、区域3（右侧提示词） -->
+    </div>
+  </div>
+
+  <!-- ChatFlow 外观设置弹窗 (1:1 像素级还原) -->
+  <div id="themeModalOverlay" class="chatflow-modal-overlay">
+    <div class="chatflow-dialog">
+      <!-- Header -->
+      <div class="chatflow-dialog-header">
+        <h3 class="chatflow-dialog-title">外观设置</h3>
+        <button id="themeModalCloseBtn" class="chatflow-close-btn" aria-label="关闭">✕</button>
+      </div>
+
+      <!-- Mode Toggle Segmented Control (Pill Switcher) -->
+      <div>
+        <div class="chatflow-pill-container">
+          <button id="modeLightBtn" class="chatflow-pill-btn" data-mode="light">
+            <span style="font-size: 14px;">☀️</span>
+            <span>浅色</span>
+          </button>
+          <button id="modeDarkBtn" class="chatflow-pill-btn" data-mode="dark">
+            <span style="font-size: 14px;">🌙</span>
+            <span>深色</span>
+          </button>
+          <button id="modeSystemBtn" class="chatflow-pill-btn" data-mode="system">
+            <span style="font-size: 14px;">💻</span>
+            <span>跟随系统</span>
+          </button>
+        </div>
+      </div>
+
+            <!-- 陪伴水母控制项 -->
+      <div class="chatflow-setting-row">
+        <div class="chatflow-setting-info">
+          <div class="chatflow-setting-label">🪼 陪伴水母数量</div>
+          <div class="chatflow-setting-desc">原生物理动力学模拟，支持鼠标/手指轻逗交互</div>
+        </div>
+        <div class="chatflow-stepper">
+          <button id="jellyfishDecBtn" class="chatflow-stepper-btn" aria-label="减少水母">−</button>
+          <span id="jellyfishCountDisplay" class="chatflow-stepper-value">5 只</span>
+          <button id="jellyfishIncBtn" class="chatflow-stepper-btn" aria-label="增加水母">+</button>
+        </div>
+      </div>
+
+      <!-- 7大色调网格 -->
+      <div id="chatflowThemesGrid" class="chatflow-themes-grid">
+        <!-- 动态通过 JS 渲染 7 张主题卡片 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 商业合作弹窗 (ChatFlow 统一规范) -->
+  <div id="commercialModalOverlay" class="chatflow-modal-overlay">
+    <div class="chatflow-dialog" style="max-width: 480px;">
+      <div class="chatflow-dialog-header">
+        <div class="chatflow-dialog-title" style="display: flex; align-items: center; gap: 8px;">
+          <span>💼 商务合作 & 创意定制</span>
+        </div>
+        <button id="closeCommercialModalBtn" class="chatflow-close-btn" aria-label="关闭">✕</button>
+      </div>
+      <p style="font-size: 13px; color: var(--text-secondary); margin: -8px 0 16px 0; line-height: 1.5;">水母的探索日记 · 专注 AI 创意设计与 Web3D 互动体验</p>
+
+      <div class="commercial-content" style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="background: var(--bg-surface); border-radius: 14px; padding: 16px; border: 1px solid var(--border-subtle);">
+          <div style="font-weight: 600; font-size: 14px; margin-bottom: 8px; color: var(--morandi-purple); display: flex; align-items: center; gap: 6px;">
+            <span>✨ 承接业务范围</span>
+          </div>
+          <ul style="font-size: 13px; color: var(--text-primary); line-height: 2; margin: 0; padding-left: 18px;">
+            <li>企业/品牌 3D WebGL / WebGPU 网页互动定制</li>
+            <li>小红书爆款视觉 IP / 3D 毛绒质感素材商用授权</li>
+            <li>Midjourney / ComfyUI 商业工作流私有化部署与咨询</li>
+            <li>AI 创意短视频制作与品牌视觉方案定制</li>
+          </ul>
+        </div>
+
+        <div style="background: rgba(217, 212, 229, 0.12); border-radius: 14px; padding: 16px; border: 1px solid rgba(217, 212, 229, 0.25);">
+          <div style="font-weight: 600; font-size: 14px; margin-bottom: 8px; color: var(--morandi-purple); display: flex; align-items: center; gap: 6px;">
+            <span>📬 商务对接通道</span>
+          </div>
+          <p style="font-size: 13px; color: var(--text-primary); margin: 0; line-height: 1.7;">
+            小红书私信：<strong style="color: var(--text-primary);">水母的探索日记</strong><br>
+            <span style="font-size: 12px; color: var(--text-secondary);">商务合作请备注【项目名称 + 需求简述 + 预算预期】</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 登录 / 注册认证模态框 (自适应主题 Morandi 磨砂质感) -->
+  <div id="authModalOverlay" class="chatflow-modal-overlay">
+    <div class="chatflow-dialog auth-dialog" style="max-width: 440px;">
+      <div class="chatflow-dialog-header">
+        <div>
+          <div class="chatflow-dialog-title" id="authModalTitle">🪼 创作者通行证</div>
+          <div class="chatflow-dialog-subtitle" id="authModalSubtitle">关注公众号回复【水母】获取内测专属邀请码</div>
+        </div>
+        <button id="closeAuthModalBtn" class="chatflow-close-btn" title="关闭">✕</button>
+      </div>
+
+      <div class="auth-tabs-row">
+        <button id="tabLoginBtn" class="auth-tab-btn active">会员登录</button>
+        <button id="tabRegisterBtn" class="auth-tab-btn">邀请码注册</button>
+      </div>
+
+      <!-- 登录表单 -->
+      <form id="loginForm" class="auth-form-content">
+        <div class="auth-input-group">
+          <label>账号 / 邮箱</label>
+          <input type="text" id="loginUsername" placeholder="请输入你的创作者昵称或邮箱" required autocomplete="username">
+        </div>
+        <div class="auth-input-group">
+          <label>访问密码</label>
+          <input type="password" id="loginPassword" placeholder="请输入密码" required autocomplete="current-password">
+        </div>
+        <div class="auth-error-msg hidden" id="loginErrorMsg"></div>
+        <button type="button" id="submitLoginBtn" class="auth-submit-btn">立即登录</button>
+      </form>
+
+      <!-- 注册表单 -->
+      <form id="registerForm" class="auth-form-content hidden">
+        <div class="auth-input-group">
+          <label>创作者昵称</label>
+          <input type="text" id="regUsername" placeholder="起一个好听的探索日记名字" required autocomplete="username">
+        </div>
+        <div class="auth-input-group">
+          <label>电子邮箱地址</label>
+          <input type="email" id="regEmail" placeholder="支持 QQ、163、Gmail 等常用邮箱" required autocomplete="email">
+        </div>
+        <div class="auth-input-group">
+          <label>邮箱验证码</label>
+          <div class="auth-verify-row">
+            <input type="text" id="regVerifyCode" placeholder="6 位邮件验证码" maxlength="6" required autocomplete="one-time-code">
+            <button type="button" id="sendCodeBtn" class="auth-send-code-btn">获取验证码</button>
+          </div>
+        </div>
+        <div class="auth-input-group">
+          <label>设置密码</label>
+          <input type="password" id="regPassword" placeholder="至少 6 位字母或数字" required autocomplete="new-password">
+        </div>
+        <div class="auth-input-group">
+          <label>专属邀请通行码 <span class="auth-tip-pill">公众号回复【水母】自动获取</span></label>
+          <input type="text" id="regInviteCode" placeholder="如：JELLY-VIP 或 PRO-8888" required>
+        </div>
+        <div class="auth-error-msg hidden" id="regErrorMsg"></div>
+        <button type="button" id="submitRegisterBtn" class="auth-submit-btn">验证邮箱与邀请码并完成注册</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast 提示条 -->
+  <div class="toast" id="toast">复制成功！</div>
+
+  <script src="seaweed.js?v=20261011_42"></script>
+  <script src="jellyfish.js?v=20261011_43"></script>
+  <script src="pullcord.js?v=20261011_54"></script>
+  <script src="data.js?v=20261011_24"></script>
+  <script src="app.js?v=20261011_56"></script>
+</body>
+</html>

@@ -43,11 +43,18 @@
     x: -1000,
     y: -1000,
     isDown: false,
-    button: 0, // 0: 左键(全图召唤聚集), 1: 中键(星系环绕转圈)
+    button: 0, // 0: 左键/单指(全图召唤聚集), 1: 中键/双指(星系环绕转圈)
     downStartTime: 0,
     downX: -1000,
-    downY: -1000
+    downY: -1000,
+    downClientX: -1000,
+    downClientY: -1000
   };
+
+  // 多点指针追踪：手机上用「双指按住」代替鼠标中键，触发星系环绕转圈
+  const activePointers = new Set(); // 当前按下的触摸指针 id
+  let primaryPointerId = null;      // 主导交互的指针 id
+  let gestureConsumed = false;      // 已升级为多指手势，抬手时不判定点击/投喂
 
   // 3. 浮游食物系统
   const foods = [];
@@ -722,34 +729,76 @@
   // ============================================================================
   // 8. 全局用户交互监听 (点击受惊 / 投喂 / 长按左键聚集 / 长按中键转圈)
   // ============================================================================
-  window.addEventListener('mousedown', (e) => {
-    // 忽略在弹窗或按钮上的点击
+  // 统一入口：鼠标与手指走同一套逻辑。
+  // 单指轻点 = 左键短按（投喂 / 惊走水母）；单指长按拖动 = 左键按住（聚拢）；
+  // 双指按住 = 中键（星系环绕转圈）——手机上最自然的替身手势。
+  function hubPointerDown(e) {
     if (e.target.closest('.chatflow-modal-overlay, button, input, a, .work-detail-view')) return;
 
-    // 针对鼠标中键按下，阻止默认的滚轮自动滚动图标 (Auto-scroll)
-    if (e.button === 1) {
-      e.preventDefault();
+    const isTouch = e.pointerType !== 'mouse';
+    if (isTouch) {
+      activePointers.add(e.pointerId);
+      if (activePointers.size >= 2) {
+        // 第二根手指落下：从「聚拢」升级为「星系环绕转圈」
+        mouse.button = 1;
+        gestureConsumed = true;
+      } else {
+        primaryPointerId = e.pointerId;
+        mouse.button = 0;
+        gestureConsumed = false;
+      }
+    } else {
+      if (e.button === 1) e.preventDefault(); // 阻止中键触发自动滚动图标
+      mouse.button = e.button;
+      primaryPointerId = e.pointerId;
     }
 
     const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
     mouse.x = e.clientX;
     mouse.y = e.clientY + scrollY; // 映射至网页绝对坐标
-    mouse.button = e.button; // 记录按键类型 (0: 左键, 1: 中键)
+    mouse.downClientX = e.clientX; // 视口坐标，供拖动距离判定使用
+    mouse.downClientY = e.clientY;
     mouse.isDown = true;
     mouse.downStartTime = performance.now();
     mouse.downX = mouse.x;
     mouse.downY = mouse.y;
-  });
+  }
 
-  window.addEventListener('mousemove', (e) => {
+  function hubPointerMove(e) {
+    if (mouse.isDown && primaryPointerId !== null && e.pointerId !== primaryPointerId) return;
     const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
     mouse.x = e.clientX;
     mouse.y = e.clientY + scrollY;
-  });
 
-  window.addEventListener('mouseup', (e) => {
+    // 手指拖动时阻止页面跟着滚动，否则拖水母会变成翻页
+    if (mouse.isDown && e.pointerType !== 'mouse' && e.cancelable) {
+      const moved = Math.hypot(e.clientX - mouse.downClientX, e.clientY - mouse.downClientY);
+      const onControl = e.target.closest('.chatflow-modal-overlay, button, input, a, .work-detail-view, .work-card');
+      if (moved > 6 && !onControl) e.preventDefault();
+    }
+  }
+
+  function hubPointerEnd(e) {
+    const isTouch = e.pointerType !== 'mouse';
+    if (isTouch) {
+      activePointers.delete(e.pointerId);
+      // 还有手指没抬起：退回单指「聚拢」模式，不算一次点击
+      if (activePointers.size > 0) {
+        primaryPointerId = activePointers.values().next().value;
+        mouse.button = 0;
+        return;
+      }
+    }
+    if (mouse.isDown && primaryPointerId !== null && e.pointerId !== primaryPointerId) return;
     if (!mouse.isDown) return;
+
     mouse.isDown = false;
+    const wasConsumed = gestureConsumed;
+    gestureConsumed = false;
+    primaryPointerId = null;
+    // 双指转圈（中键语义）收尾时不触发投喂/惊走
+    if (wasConsumed || mouse.button !== 0) return;
+
     const pressDuration = performance.now() - mouse.downStartTime;
     const scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
     const upX = e.clientX;
@@ -770,13 +819,18 @@
       }
     }
 
-    // B. 若未点击在水母上且为短按左键 -> 投喂浮游食物
-    if (mouse.button === 0 && !clickedJelly && pressDuration < 320) {
+    // B. 若未点击在水母上且为短按 -> 投喂浮游食物（鼠标 / 手指通用）
+    if (!clickedJelly && pressDuration < 320) {
       if (!e.target.closest('.chatflow-modal-overlay, button, input, a, .work-detail-view, .work-card')) {
         spawnFood(upX, upY);
       }
     }
-  });
+  }
+
+  window.addEventListener('pointerdown', hubPointerDown);
+  window.addEventListener('pointermove', hubPointerMove);
+  window.addEventListener('pointerup', hubPointerEnd);
+  window.addEventListener('pointercancel', hubPointerEnd);
 
   // 绑定外观设置中的步进器
   document.addEventListener('DOMContentLoaded', () => {

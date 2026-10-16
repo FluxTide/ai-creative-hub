@@ -1069,6 +1069,32 @@ function initChatflowThemeEvents() {
     });
   }
 
-  // 初始应用
-  applyChatflowThemeDOM();
+
+  // ── 水母玩法说明弹窗 ──
+  const jellyGuideBtn = document.getElementById('jellyGuideBtn');
+  const jellyGuideOverlay = document.getElementById('jellyGuideOverlay');
+  const jellyGuideCloseBtn = document.getElementById('jellyGuideCloseBtn');
+
+  if (jellyGuideBtn && jellyGuideOverlay) {
+    jellyGuideBtn.addEventListener('click', () => {
+      // 说明盖在外观设置之上，关闭后回到外观设置，而不是直接关掉整个设置面板
+      jellyGuideOverlay.classList.add('active');
+    });
+  }
+
+  if (jellyGuideCloseBtn && jellyGuideOverlay) {
+    jellyGuideCloseBtn.addEventListener('click', () => {
+      jellyGuideOverlay.classList.remove('active');
+    });
+  }
+
+  if (jellyGuideOverlay) {
+    jellyGuideOverlay.addEventListener('click', (e) => {
+      if (e.target === jellyGuideOverlay) {
+        jellyGuideOverlay.classList.remove('active');
+      }
+    });
+  }
+
+  // 初始应用  applyChatflowThemeDOM();
 }

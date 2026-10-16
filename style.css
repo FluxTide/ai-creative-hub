@@ -2054,3 +2054,155 @@ html[data-mode="dark"] .auth-tabs-row {
   transform: translate(-50%, -50%) scale(1.04);
   background: #ffffff;
 }
+
+/* ── 水母玩法说明（外观设置内的入口 + 弹窗）───────────────── */
+.jelly-guide-entry {
+  width: 100%;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: var(--transition);
+}
+
+.jelly-guide-entry:hover {
+  border-color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.jelly-guide-arrow {
+  font-size: 20px;
+  color: var(--text-muted);
+  line-height: 1;
+}
+
+.jelly-guide-dialog {
+  max-width: 540px;
+}
+
+.jelly-guide-body {
+  max-height: 68vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.jelly-guide-sec {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: .04em;
+  margin: 16px 0 10px;
+}
+
+.jelly-guide-sec:first-child {
+  margin-top: 0;
+}
+
+.jelly-guide-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+
+.jelly-guide-icon {
+  flex: 0 0 52px;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-hover);
+  border-radius: 10px;
+  color: var(--text-primary);
+}
+
+.jelly-guide-icon svg {
+  width: 34px;
+  height: 34px;
+}
+
+.jelly-guide-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.jelly-guide-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 3px;
+}
+
+.jelly-guide-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.jelly-guide-key {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+  background: var(--surface-hover);
+  border-radius: 20px;
+}
+
+.jelly-evo-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.jelly-evo-card {
+  padding: 12px 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.jelly-evo-card svg {
+  width: 100%;
+  height: 62px;
+}
+
+.jelly-evo-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-top: 6px;
+}
+
+.jelly-evo-meta {
+  font-size: 10.5px;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin-top: 4px;
+}
+
+.jelly-guide-tip {
+  margin-top: 14px;
+  padding: 12px 14px;
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  line-height: 1.75;
+  background: var(--surface-hover);
+  border-radius: 12px;
+}
+
+@media (max-width: 480px) {
+  .jelly-evo-row {
+    grid-template-columns: 1fr;
+  }
+
+  .jelly-guide-body {
+    max-height: 62vh;
+  }
+}

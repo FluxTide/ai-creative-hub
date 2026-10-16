@@ -6,7 +6,7 @@
   <title>水母的探索日记 · AI 创作资源库</title>
   <meta name="description" content="到处乱逛，顺便捡点有意思的东西 🪼 设计｜科技｜AI｜奇奇怪怪的小玩意">
   <link rel="icon" href="assets/avatar.png">
-  <link rel="stylesheet" href="style.css?v=20261011_54">
+  <link rel="stylesheet" href="style.css?v=20261016_2350">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -185,9 +185,145 @@
         </div>
       </div>
 
+      <!-- 玩法说明入口 -->
+      <button id="jellyGuideBtn" class="chatflow-setting-row jelly-guide-entry" type="button">
+        <div class="chatflow-setting-info" style="text-align: left;">
+          <div class="chatflow-setting-label">📖 水母玩法说明</div>
+          <div class="chatflow-setting-desc">5 种手势 · 三阶进化 · 看图一学就会</div>
+        </div>
+        <span class="jelly-guide-arrow">›</span>
+      </button>
+
       <!-- 7大色调网格 -->
       <div id="chatflowThemesGrid" class="chatflow-themes-grid">
         <!-- 动态通过 JS 渲染 7 张主题卡片 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 水母玩法说明弹窗 -->
+  <div id="jellyGuideOverlay" class="chatflow-modal-overlay">
+    <div class="chatflow-dialog jelly-guide-dialog">
+      <div class="chatflow-dialog-header">
+        <div>
+          <div class="chatflow-dialog-title">🪼 水母玩法说明</div>
+          <div class="chatflow-dialog-subtitle">它们会吃、会怕、会长大 —— 就在你屏幕这片深水里</div>
+        </div>
+        <button id="jellyGuideCloseBtn" class="chatflow-close-btn" aria-label="关闭">✕</button>
+      </div>
+      <div class="jelly-guide-body">
+        <div class="jelly-guide-sec">五个手势</div>
+        <div class="jelly-guide-card">
+          <div class="jelly-guide-icon"><svg viewBox="0 0 64 64" fill="none">
+<circle cx="24" cy="20" r="5.5" stroke="currentColor" stroke-width="2"/>
+<circle cx="24" cy="20" r="11.5" stroke="currentColor" stroke-width="1.6" opacity=".45"/>
+<circle cx="24" cy="20" r="18" stroke="currentColor" stroke-width="1.2" opacity=".18"/>
+<circle cx="43" cy="41" r="4.2" fill="#E8C46A"/>
+<circle cx="52" cy="47" r="2.4" fill="#E8C46A" opacity=".55"/>
+<circle cx="34" cy="49" r="2" fill="#E8C46A" opacity=".4"/>
+</svg></div>
+          <div class="jelly-guide-text">
+            <div class="jelly-guide-name">轻点 · 投喂</div>
+            <div class="jelly-guide-desc">在页面空白处轻点一下，丢下一颗金色浮游食物。附近的水母闻到味道就会游过来吃掉。</div>
+            <span class="jelly-guide-key">鼠标左键 / 单指轻点</span>
+          </div>
+        </div>
+        <div class="jelly-guide-card">
+          <div class="jelly-guide-icon"><svg viewBox="0 0 64 64" fill="none">
+<circle cx="32" cy="32" r="5" fill="currentColor"/>
+<circle cx="32" cy="32" r="10" stroke="currentColor" stroke-width="1.6" opacity=".45"/>
+<circle cx="32" cy="10" r="3.4" fill="currentColor" opacity=".7"/>
+<circle cx="54" cy="32" r="3.4" fill="currentColor" opacity=".7"/>
+<circle cx="32" cy="54" r="3.4" fill="currentColor" opacity=".7"/>
+<circle cx="10" cy="32" r="3.4" fill="currentColor" opacity=".7"/>
+<path d="M32 16 L32 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".7"/>
+<path d="M46 32 L40 32" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".7"/>
+<path d="M32 48 L32 42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".7"/>
+<path d="M18 32 L24 32" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".7"/>
+</svg></div>
+          <div class="jelly-guide-text">
+            <div class="jelly-guide-name">长按 · 聚拢</div>
+            <div class="jelly-guide-desc">按住不放，全屏的水母都会朝你手指的位置聚过来，像被一只看不见的手牵着走。</div>
+            <span class="jelly-guide-key">鼠标左键按住 / 单指按住拖动</span>
+          </div>
+        </div>
+        <div class="jelly-guide-card">
+          <div class="jelly-guide-icon"><svg viewBox="0 0 64 64" fill="none">
+<circle cx="32" cy="32" r="26" stroke="currentColor" stroke-width="1.6" stroke-dasharray="4 4" opacity=".65"/>
+<rect x="24" y="19" width="16" height="25" rx="8" stroke="currentColor" stroke-width="2" opacity=".8"/>
+<path d="M32 19 L32 25" stroke="currentColor" stroke-width="1.6" opacity=".8"/>
+<path d="M32 19 h8 a3 3 0 0 1 0 6 h-8 z" fill="currentColor"/>
+<circle cx="58" cy="32" r="3.6" fill="currentColor"/>
+<circle cx="32" cy="6" r="3" fill="currentColor" opacity=".6"/>
+<circle cx="6" cy="32" r="3" fill="currentColor" opacity=".4"/>
+<path d="M45 9.5 A26 26 0 0 1 58 32" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+<path d="M58 32 L53.5 27.5 M58 32 L62.5 27.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+</svg></div>
+          <div class="jelly-guide-text">
+            <div class="jelly-guide-name">中键 · 绕圈（电脑）</div>
+            <div class="jelly-guide-desc">按住鼠标中键（滚轮键），水母会排成一层层同心圆轨道，绕着光标慢慢公转。</div>
+            <span class="jelly-guide-key">按住鼠标中键</span>
+          </div>
+        </div>
+        <div class="jelly-guide-card">
+          <div class="jelly-guide-icon"><svg viewBox="0 0 64 64" fill="none">
+<circle cx="20" cy="11" r="5.5" fill="currentColor"/>
+<circle cx="44" cy="11" r="5.5" fill="currentColor" opacity=".7"/>
+<rect x="17" y="24" width="30" height="36" rx="6" stroke="currentColor" stroke-width="1.8" opacity=".5"/>
+<circle cx="32" cy="42" r="15" stroke="currentColor" stroke-width="1.6" stroke-dasharray="4 4" opacity=".65"/>
+<circle cx="47" cy="42" r="3.4" fill="currentColor"/>
+<circle cx="32" cy="27" r="2.8" fill="currentColor" opacity=".6"/>
+<circle cx="17" cy="42" r="2.8" fill="currentColor" opacity=".4"/>
+<path d="M39.5 29 A15 15 0 0 1 47 42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+<path d="M47 42 L42.5 37.5 M47 42 L51.5 37.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+</svg></div>
+          <div class="jelly-guide-text">
+            <div class="jelly-guide-name">双指 · 绕圈（手机）</div>
+            <div class="jelly-guide-desc">两根手指同时按住屏幕，和电脑中键一样的效果 —— 水母开始绕圈转。</div>
+            <span class="jelly-guide-key">双指同时按住</span>
+          </div>
+        </div>
+        <div class="jelly-guide-card">
+          <div class="jelly-guide-icon"><svg viewBox="0 0 64 64" fill="none">
+<path d="M11 33 Q11 23 20 23 Q29 23 29 33 Q29 37 20 37 Q11 37 11 33 Z" fill="currentColor" opacity=".75"/>
+<path d="M15 36 q-1.6 5 0.4 9" stroke="currentColor" stroke-width="1.4" opacity=".5" stroke-linecap="round"/>
+<path d="M20 37 q0 5 0 9" stroke="currentColor" stroke-width="1.4" opacity=".5" stroke-linecap="round"/>
+<path d="M25 36 q1.6 5 -0.4 9" stroke="currentColor" stroke-width="1.4" opacity=".5" stroke-linecap="round"/>
+<path d="M37 28 l6 -6" stroke="#D9736B" stroke-width="2.2" stroke-linecap="round"/>
+<path d="M42 36 l8 0" stroke="#D9736B" stroke-width="2.2" stroke-linecap="round"/>
+<path d="M37 44 l6 6" stroke="#D9736B" stroke-width="2.2" stroke-linecap="round"/>
+<path d="M28 50 l0 8" stroke="#D9736B" stroke-width="2.2" stroke-linecap="round"/>
+<path d="M20 20 Q31 9 46 10" stroke="currentColor" stroke-width="1.6" stroke-dasharray="3 3" opacity=".45"/>
+<circle cx="48" cy="10" r="2.6" fill="currentColor" opacity=".45"/>
+</svg></div>
+          <div class="jelly-guide-text">
+            <div class="jelly-guide-name">点它 · 惊走</div>
+            <div class="jelly-guide-desc">手指直接戳在水母身上，它会猛地弹开逃走一小段，过一会儿才敢回来。</div>
+            <span class="jelly-guide-key">点中水母本体</span>
+          </div>
+        </div>
+        <div class="jelly-guide-sec">喂多了会进化</div>
+        <div class="jelly-evo-row">
+          <div class="jelly-evo-card">
+            <svg viewBox="0 0 56 62"><path d="M19.0 24.0 Q19.0 15.0 28.0 15.0 Q37.0 15.0 37.0 24.0 Q37.0 27.1 28.0 27.1 Q19.0 27.1 19.0 24.0 Z" fill="currentColor" opacity=".82"/><path d="M22.6 27.1 q-1.6 4.5 0.5 8 q1.6 4 -0.5 8 q-1.2 4 0.3 7" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".5" stroke-linecap="round"/><path d="M26.2 27.1 q-1.6 4.5 0.5 8 q1.6 4 -0.5 8 q-1.2 4 0.3 7" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".5" stroke-linecap="round"/><path d="M29.8 27.1 q-1.6 4.5 0.5 8 q1.6 4 -0.5 8 q-1.2 4 0.3 7" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".5" stroke-linecap="round"/><path d="M33.4 27.1 q-1.6 4.5 0.5 8 q1.6 4 -0.5 8 q-1.2 4 0.3 7" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".5" stroke-linecap="round"/></svg>
+            <div class="jelly-evo-name">幼萤</div>
+            <div class="jelly-evo-meta">初始形态<br>4 根触手 · 游得最快</div>
+          </div>
+          <div class="jelly-evo-card">
+            <svg viewBox="0 0 56 62"><path d="M15.0 24.0 Q15.0 11.0 28.0 11.0 Q41.0 11.0 41.0 24.0 Q41.0 28.4 28.0 28.4 Q15.0 28.4 15.0 24.0 Z" fill="currentColor" opacity=".82"/><path d="M20.2 28.4 q-1.6 4.5 0.5 8 q1.6 4 -0.5 8 q-1.2 4 0.3 7" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".5" stroke-linecap="round"/><path d="M23.3 28.4 q-1.6 4.5 0.5 8 q1.6 4 -0.5 8 q-1.2 4 0.3 7" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".5" stroke-linecap="round"/><path d="M26.4 28.4 q-1.6 4.5 0.5 8 q1.6 4 -0.5 8 q-1.2 4 0.3 7" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".5" stroke-linecap="round"/><path d="M29.6 28.4 q-1.6 4.5 0.5 8 q1.6 4 -0.5 8 q-1.2 4 0.3 7" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".5" stroke-linecap="round"/><path d="M32.7 28.4 q-1.6 4.5 0.5 8 q1.6 4 -0.5 8 q-1.2 4 0.3 7" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".5" stroke-linecap="round"/><path d="M35.8 28.4 q-1.6 4.5 0.5 8 q1.6 4 -0.5 8 q-1.2 4 0.3 7" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".5" stroke-linecap="round"/></svg>
+            <div class="jelly-evo-name">游纱</div>
+            <div class="jelly-evo-meta">吃掉 2 颗食物<br>6 根触手 · 个头变大</div>
+          </div>
+          <div class="jelly-evo-card">
+            <svg viewBox="0 0 56 62"><circle cx="28.0" cy="23.0" r="26.4" fill="currentColor" opacity=".12"/><path d="M11.0 24.0 Q11.0 7.0 28.0 7.0 Q45.0 7.0 45.0 24.0 Q45.0 29.8 28.0 29.8 Q11.0 29.8 11.0 24.0 Z" fill="currentColor" opacity=".82"/><path d="M17.8 29.8 q-1.6 4.5 0.5 8 q1.6 4 -0.5 8 q-1.2 4 0.3 7" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".5" stroke-linecap="round"/><path d="M21.2 29.8 q-1.6 4.5 0.5 8 q1.6 4 -0.5 8 q-1.2 4 0.3 7" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".5" stroke-linecap="round"/><path d="M24.6 29.8 q-1.6 4.5 0.5 8 q1.6 4 -0.5 8 q-1.2 4 0.3 7" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".5" stroke-linecap="round"/><path d="M28.0 29.8 q-1.6 4.5 0.5 8 q1.6 4 -0.5 8 q-1.2 4 0.3 7" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".5" stroke-linecap="round"/><path d="M31.4 29.8 q-1.6 4.5 0.5 8 q1.6 4 -0.5 8 q-1.2 4 0.3 7" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".5" stroke-linecap="round"/><path d="M34.8 29.8 q-1.6 4.5 0.5 8 q1.6 4 -0.5 8 q-1.2 4 0.3 7" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".5" stroke-linecap="round"/><path d="M38.2 29.8 q-1.6 4.5 0.5 8 q1.6 4 -0.5 8 q-1.2 4 0.3 7" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".5" stroke-linecap="round"/></svg>
+            <div class="jelly-evo-name">满月</div>
+            <div class="jelly-evo-meta">吃掉 4 颗食物<br>7 根触手 + 丝绸口腕 · 带光晕</div>
+          </div>
+        </div>
+        <div class="jelly-guide-tip">
+          小贴士：同一屏幕最多同时存在 11 颗食物，食物会慢慢沉底消失；长得越大的水母鼻子越灵（感知范围从 300px 涨到 700px），转圈时也转得更慢更稳。
+          在右上角「⚙️ 外观设置」里可以调水母数量（0–15 只）和换 7 套配色。
+        </div>
       </div>
     </div>
   </div>
@@ -297,6 +433,6 @@
   <script src="jellyfish.js?v=20261016_1945"></script>
   <script src="pullcord.js?v=20261011_54"></script>
   <script src="data.js?v=20261016_1945"></script>
-  <script src="app.js?v=20261016_1945"></script>
+  <script src="app.js?v=20261016_2350"></script>
 </body>
 </html>

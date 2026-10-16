@@ -76,14 +76,14 @@ document.addEventListener('DOMContentLoaded', () => {
     emptyState.style.display = 'none';
     cardsGrid.innerHTML = filtered.map(item => {
       const isVideo = Boolean(item.video);
-      const isProItem = (item.id === 'AI-VID-008' || item.id === 'AI-VID-010' || item.category === 'workflow');
+      const isProItem = false;
       return `
         <article class="work-card ${isVideo ? 'has-video' : ''}" data-id="${item.id}">
           <div class="card-media-wrap">
             ${isProItem ? '<div class="pro-badge-corner">👑 PRO专享</div>' : ''}
             <img src="${item.cover}" alt="${item.title}" class="card-cover" loading="lazy">
             ${isVideo ? `
-              <video class="card-video-preview" src="${item.video}" muted loop playsinline preload="none"></video>
+              <video class="card-video-preview" src="${item.video}" muted loop playsinline preload="none" onerror="this.style.display='none'"></video>
               <div class="media-badge">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M8 5v14l11-7z"/>
@@ -137,6 +137,56 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
+  // 视频源不可用时（如部署包未携带 MP4）降级为封面图 + 在线体验按钮。
+  // 说明：不能只靠 onerror —— 浏览器对 preload="none"/未进入视口的 video 可能根本不发请求，
+  // 那样 error 事件永远不来。这里主动探测一次，并叠加 error / stalled / 超时三重兜底。
+  window.__hubVideoFallback = function (videoEl) {
+    if (!videoEl || videoEl.dataset.fallbackDone === '1') return;
+    videoEl.dataset.fallbackDone = '1';
+    const playUrl = videoEl.dataset.playUrl || '';
+    const wrap = document.createElement('div');
+    wrap.className = 'detail-video-fallback';
+    wrap.innerHTML = `
+      <img class="detail-image" src="${videoEl.getAttribute('poster') || ''}" alt="作品封面">
+      ${playUrl ? `<a href="${playUrl}" target="_blank" rel="noopener noreferrer" class="detail-video-play-btn">▶ 点击在线体验（可交互）</a>` : ''}
+    `;
+    if (videoEl.parentNode) videoEl.parentNode.replaceChild(wrap, videoEl);
+  };
+
+  // 主动确认某个视频地址真的可用：HEAD 探测，失败或超时即降级
+  window.__hubProbeVideo = function (videoEl) {
+    if (!videoEl || videoEl.dataset.probeDone === '1') return;
+    videoEl.dataset.probeDone = '1';
+    const src = videoEl.getAttribute('src');
+    if (!src) { window.__hubVideoFallback(videoEl); return; }
+
+    let settled = false;
+    const giveUp = () => {
+      if (settled) return;
+      settled = true;
+      window.__hubVideoFallback(videoEl);
+    };
+
+    // 兜底 1：元素自身报错（如解码失败）
+    videoEl.addEventListener('error', giveUp);
+    // 兜底 2：加载卡死（网络挂起不发响应）
+    videoEl.addEventListener('stalled', () => setTimeout(giveUp, 3000));
+    // 兜底 3：探测请求本身超时
+    const timer = setTimeout(giveUp, 8000);
+
+    fetch(src, { method: 'HEAD' })
+      .then(res => {
+        clearTimeout(timer);
+        if (settled) return;
+        settled = true;
+        const type = res.headers.get('content-type') || '';
+        if (!res.ok || /text\/html/i.test(type)) {
+          window.__hubVideoFallback(videoEl);
+        }
+      })
+      .catch(() => { clearTimeout(timer); giveUp(); });
+  };
+
   function escapeHtml(str) {
     if (!str) return '';
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -156,7 +206,10 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="detail-area-video">
         <div class="detail-video-card">
           ${item.video ? `
-            <video class="detail-video" src="${item.video}" poster="${item.cover}" controls autoplay loop muted playsinline></video>
+            <video class="detail-video" src="${item.video}" poster="${item.cover}" controls autoplay loop muted playsinline
+              data-play-url="${item.toolUrl || (item.links && item.links[0] ? item.links[0].url : '')}"
+              onerror="window.__hubVideoFallback && window.__hubVideoFallback(this)"
+              onloadedmetadata="window.__hubProbeVideo && window.__hubProbeVideo(this)"></video>
           ` : `
             <img class="detail-image" src="${item.cover}" alt="${item.title}">
           `}
@@ -303,6 +356,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     workDetailView.classList.add('active');
     document.body.style.overflow = 'hidden';
+
+    // 详情视图刚渲染，视频元素还没开始加载 —— 主动探测一次，缺文件就立刻降级
+    const detailVideo = detailGridLayout.querySelector('.detail-video');
+    if (detailVideo) window.__hubProbeVideo(detailVideo);
 
     // 绑定一键复制与中英文切换事件（默认中文版）
     let currentActiveLang = 'zh';

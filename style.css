@@ -2012,3 +2012,45 @@ html[data-mode="dark"] .auth-tabs-row {
   padding: 20px;
   text-align: center;
 }
+
+/* ============================================
+   视频降级占位（部署包未携带 MP4 时使用）
+   ============================================ */
+.detail-video-fallback {
+  position: relative;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+}
+
+.detail-video-fallback .detail-image {
+  width: 100%;
+  display: block;
+  border-radius: 12px;
+}
+
+.detail-video-play-btn {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 26px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #2C3539;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+  transition: transform 0.18s ease, background 0.18s ease;
+  white-space: nowrap;
+}
+
+.detail-video-play-btn:hover {
+  transform: translate(-50%, -50%) scale(1.04);
+  background: #ffffff;
+}

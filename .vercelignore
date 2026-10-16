@@ -1,0 +1,12 @@
+# 部署包瘦身：150MB 的 MP4 不上传到 Vercel。
+# 本地开发仍保留这些文件（server.py 会照常播放），
+# 线上由 app.js 的降级逻辑显示封面图 + 「点击在线体验」按钮。
+*.mp4
+
+# 本地开发服务器 / 日志，不属于静态站点
+server.py
+server.log
+*.log
+
+# 源素材副本（根目录 assets/ 与 public/assets/ 重叠，部署只需后者）
+/assets/

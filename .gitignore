@@ -1,0 +1,17 @@
+# 本地开发服务器运行日志
+*.log
+server.log
+
+# 本地环境配置（可能含邮箱授权码等凭据）
+.env
+.env.local
+
+# 编辑器与系统产物
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Python 缓存
+__pycache__/
+*.pyc

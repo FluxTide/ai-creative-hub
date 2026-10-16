@@ -1,0 +1,28 @@
+水母的探索日记 · AI 创作资源库 (ai-creative-hub)
+Copyright 2026 koomorebi
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+
+第三方组件与素材归属
+====================
+
+1. pullcord.js（天花板物理拉绳换肤组件）
+   本项目中的 pullcord.js 是基于 mortspace/pullcord 的 React/Motion 实现，
+   改写为纯 Vanilla JS + SVG 形式。
+   上游项目：https://github.com/mortspace/pullcord
+   上游许可：MIT License, Copyright (c) 2026 iisac
+   本文件在 MIT 许可下使用，保留其原始版权声明。
+
+2. 作品数据与在线体验
+   站内收录的作品元数据（标题、描述、提示词、外链）由本项目作者整理。
+   每个作品标注的「在线体验」链接指向 Claude Artifact 或独立的
+   Vercel 部署实例，其归属与许可依各自来源而定。
+
+3. 字体
+   页面通过 Google Fonts 加载 Plus Jakarta Sans、Noto Sans SC、
+   JetBrains Mono，均以其各自许可提供。

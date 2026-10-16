@@ -107,6 +107,9 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
 if __name__ == "__main__":
     server_address = ("0.0.0.0", 8899)
-    with DualStackServer(server_address, Handler) as httpd:
-        print("Threaded HTTP Server listening on port 8899...")
-        httpd.serve_forever()
+    try:
+        with DualStackServer(server_address, Handler) as httpd:
+            print("Threaded HTTP Server listening on port 8899...")
+            httpd.serve_forever()
+    except Exception as e:
+        print(f"[FATAL-SERVER-ERR] {e}")

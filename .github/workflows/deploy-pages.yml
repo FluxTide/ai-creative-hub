@@ -1,0 +1,51 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 排队而不是互相取消，避免并发部署把对方打断
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 组装静态站点（不含 MP4，走封面图降级）
+        run: |
+          mkdir -p _site
+          cp index.html style.css app.js data.js jellyfish.js pullcord.js seaweed.js _site/
+          cp -r assets _site/
+          # 部署包瘦身：视频不进 Pages，线上显示封面图 + 在线体验按钮
+          rm -f _site/assets/*.mp4
+          # 本地开发服务器与日志不属于静态站点
+          rm -f _site/server.py _site/*.log
+          echo "=== 部署包体积 ==="
+          du -sh _site
+          echo "=== MP4 数量（应为 0）==="
+          ls _site/assets/*.mp4 2>/dev/null | wc -l
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

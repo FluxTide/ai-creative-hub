@@ -392,6 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       });
     }
+    const copyNegBtn = document.getElementById('copyNegBtn');
     if (copyNegBtn) {
       copyNegBtn.addEventListener('click', () => {
         navigator.clipboard.writeText(item.negativePrompt).then(() => {

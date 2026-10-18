@@ -2206,3 +2206,10 @@ html[data-mode="dark"] .auth-tabs-row {
     max-height: 62vh;
   }
 }
+
+/* ── 收藏按钮 ── */
+.card-fav-btn{position:absolute;top:10px;right:10px;z-index:5;width:32px;height:32px;border-radius:50%;border:none;cursor:pointer;background:rgba(0,0,0,.35);backdrop-filter:blur(6px);color:#fff;font-size:17px;line-height:1;display:flex;align-items:center;justify-content:center;transition:transform .15s ease, background .15s ease}
+.card-fav-btn:hover{transform:scale(1.12);background:rgba(0,0,0,.55)}
+.card-fav-btn.is-fav{color:#ffcf5c;background:rgba(0,0,0,.5)}
+.detail-fav-btn{margin-left:10px;padding:4px 12px;border-radius:999px;border:1px solid rgba(128,128,128,.45);background:transparent;color:inherit;cursor:pointer;font-size:13px;transition:color .15s ease, border-color .15s ease}
+.detail-fav-btn.is-fav{color:#ffcf5c;border-color:#ffcf5c}

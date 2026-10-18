@@ -2213,3 +2213,13 @@ html[data-mode="dark"] .auth-tabs-row {
 .card-fav-btn.is-fav{color:#ffcf5c;background:rgba(0,0,0,.5)}
 .detail-fav-btn{margin-left:10px;padding:4px 12px;border-radius:999px;border:1px solid rgba(128,128,128,.45);background:transparent;color:inherit;cursor:pointer;font-size:13px;transition:color .15s ease, border-color .15s ease}
 .detail-fav-btn.is-fav{color:#ffcf5c;border-color:#ffcf5c}
+
+/* ── GitHub 入口按钮（幽灵胶囊，同商业合作一族） ── */
+.btn-ghost-github{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:20px;border:1px solid rgba(217,212,229,0.25);background:rgba(217,212,229,0.15);color:var(--morandi-purple);font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;transition:var(--transition)}
+.btn-ghost-github:hover{background:rgba(217,212,229,0.18);border-color:var(--morandi-purple);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.15)}
+.btn-ghost-github:focus-visible{outline:2px solid var(--morandi-purple);outline-offset:2px}
+/* ── 页脚 GitHub 星标链接 ── */
+.footer-github{font-size:13px;color:var(--text-muted);margin-top:8px}
+.footer-github a{color:var(--morandi-purple);text-decoration:none;font-weight:600}
+.footer-github a:hover{text-decoration:underline}
+.footer-github a:focus-visible{outline:2px solid var(--morandi-purple);outline-offset:2px;border-radius:4px}

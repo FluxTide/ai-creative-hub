@@ -731,7 +731,8 @@ const CHATFLOW_THEMES = [
 ];
 
 let currentThemeId = localStorage.getItem('cf_theme_id') || 'cloud-dancer';
-let currentThemeMode = localStorage.getItem('cf_theme_mode') || 'system';
+// 新访客默认浅色；深色或跟随系统由用户自己在「外观设置」里选
+let currentThemeMode = localStorage.getItem('cf_theme_mode') || 'light';
 
 function applyChatflowThemeDOM() {
   const root = document.documentElement;
@@ -1245,5 +1246,6 @@ function initChatflowThemeEvents() {
     });
   }
 
-  // 初始应用  applyChatflowThemeDOM();
+  // 首屏就应用主题（之前被注释掉，导致 data-theme/data-mode 从未设置，所有人都吃深色兜底）
+  applyChatflowThemeDOM();
 }

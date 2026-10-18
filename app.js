@@ -7,6 +7,157 @@ function getHubCurrentUser() {
   }
 }
 
+// ============================================================
+// 收藏与账号：全文件共享（放在最外层，别塞进任何函数里）
+// ------------------------------------------------------------
+// 踩过的坑：这两个作用域各自封闭，函数声明只在自己那个作用域里提升。
+// 收藏按钮在 renderCards 里渲染，认证按钮在另一个函数里绑定，
+// 两边都要用同一批助手，所以只能提到全局。
+// ============================================================
+let favoriteIds = new Set();
+let currentDetailId = '';
+
+const AUTH_API = (window.AUTH_HUB_URL || 'http://127.0.0.1:8100') + '/api';
+const GUEST_FAV_KEY = 'hub_guest_favorites';
+
+function getToken() {
+  try {
+    return localStorage.getItem('hub_token') || '';
+  } catch {
+    return '';
+  }
+}
+
+function setToken(token) {
+  try {
+    if (token) {
+      localStorage.setItem('hub_token', token);
+    } else {
+      localStorage.removeItem('hub_token');
+    }
+  } catch {
+    /* 隐私模式下写不进去就算了，不影响浏览 */
+  }
+}
+
+// 调 auth-hub。失败时把后端给的人话原样抛出去，前端不再自己编提示，
+// 这样「该用户名已被注册」这类提示只有一处定义，不会两边说法不一致。
+async function authCall(method, path, payload) {
+  const headers = { 'Content-Type': 'application/json' };
+  const token = getToken();
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  let resp;
+  try {
+    resp = await fetch(AUTH_API + path, {
+      method,
+      headers,
+      body: payload ? JSON.stringify(payload) : undefined
+    });
+  } catch {
+    throw new Error('连不上账号服务，请确认 auth-hub 已经启动');
+  }
+  const data = await resp.json().catch(() => ({}));
+  if (!resp.ok) {
+    throw new Error(data.detail || '请求失败，请稍后再试');
+  }
+  return data;
+}
+
+function getGuestFavorites() {
+  try {
+    return JSON.parse(localStorage.getItem(GUEST_FAV_KEY) || '[]');
+  } catch {
+    return [];
+  }
+}
+
+function setGuestFavorites(list) {
+  try {
+    localStorage.setItem(GUEST_FAV_KEY, JSON.stringify(list));
+  } catch {
+    /* 同上 */
+  }
+}
+
+function roleFromBackend(role) {
+  const r = String(role || '').toLowerCase();
+  if (r === 'admin') return 'admin';
+  if (r === 'pro') return 'pro';
+  return 'normal';
+}
+
+function favBtnHtml(item) {
+const on = favoriteIds.has(item.id);
+return `<button class="card-fav-btn ${on ? 'is-fav' : ''}" data-fav="${item.id}"`
++ ` aria-label="收藏 ${item.title}" title="收藏">${on ? '★' : '☆'}</button>`;
+}
+
+function renderFavorites() {
+document.querySelectorAll('.card-fav-btn').forEach(btn => {
+const id = btn.getAttribute('data-fav');
+const on = favoriteIds.has(id);
+btn.classList.toggle('is-fav', on);
+btn.textContent = on ? '★' : '☆';
+});
+const dbtn = document.getElementById('detailFavBtn');
+if (dbtn) {
+const on = currentDetailId && favoriteIds.has(currentDetailId);
+dbtn.classList.toggle('is-fav', Boolean(on));
+dbtn.textContent = on ? '★ 已收藏' : '☆ 收藏';
+}
+}
+
+async function loadFavorites() {
+if (!getToken()) {
+favoriteIds = new Set(getGuestFavorites());
+renderFavorites();
+return;
+}
+try {
+const guests = getGuestFavorites();
+if (guests.length) {
+  // 游客期间收藏的，登录后一次性并入账号
+  const merged = await authCall('POST', '/favorites/merge', {
+    app_id: 'jellyfish', item_ids: guests
+  });
+  setGuestFavorites([]);
+  favoriteIds = new Set(merged.items || []);
+} else {
+  const fav = await authCall('GET', '/favorites?app_id=jellyfish');
+  favoriteIds = new Set(fav.items || []);
+}
+} catch {
+favoriteIds = new Set(getGuestFavorites());
+}
+renderFavorites();
+}
+
+async function toggleFavorite(itemId) {
+if (!itemId) return;
+if (!getToken()) {
+const list = getGuestFavorites();
+const at = list.indexOf(itemId);
+if (at >= 0) list.splice(at, 1);
+else list.push(itemId);
+setGuestFavorites(list);
+favoriteIds = new Set(list);
+renderFavorites();
+showToast(at >= 0 ? '已取消收藏' : '已收藏，登录后会自动同步到你的账号');
+return;
+}
+try {
+const data = await authCall('POST', '/favorites', {
+  app_id: 'jellyfish', item_id: itemId
+});
+favoriteIds = new Set(data.items || []);
+renderFavorites();
+showToast(data.favored ? '已收藏 ★' : '已取消收藏');
+} catch (err) {
+showToast(err.message || '收藏失败，请稍后再试');
+}
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
   const cardsGrid = document.getElementById('cardsGrid');
   const emptyState = document.getElementById('emptyState');
@@ -81,6 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <article class="work-card ${isVideo ? 'has-video' : ''}" data-id="${item.id}">
           <div class="card-media-wrap">
             ${isProItem ? '<div class="pro-badge-corner">👑 PRO专享</div>' : ''}
+            ${favBtnHtml(item)}
             <img src="${item.cover}" alt="${item.title}" class="card-cover" loading="lazy">
             ${isVideo ? `
               <video class="card-video-preview" src="${item.video}" muted loop playsinline preload="none" onerror="this.style.display='none'"></video>
@@ -128,11 +280,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 点击打开详情抽屉（事件代理到 cardsGrid，保证无论何时点击均稳定捕获）
     cardsGrid.onclick = (e) => {
+      const favBtn = e.target.closest('.card-fav-btn');
+      if (favBtn) {
+        e.stopPropagation();
+        toggleFavorite(favBtn.getAttribute('data-fav'));
+        return;
+      }
       const card = e.target.closest('.work-card');
       if (!card) return;
       const id = card.getAttribute('data-id');
       if (id) {
+        currentDetailId = id;
         openDetail(id);
+        renderFavorites();
       }
     };
   }
@@ -571,7 +731,8 @@ const CHATFLOW_THEMES = [
 ];
 
 let currentThemeId = localStorage.getItem('cf_theme_id') || 'cloud-dancer';
-let currentThemeMode = localStorage.getItem('cf_theme_mode') || 'system';
+// 新访客默认浅色；深色或跟随系统由用户自己在「外观设置」里选
+let currentThemeMode = localStorage.getItem('cf_theme_mode') || 'light';
 
 function applyChatflowThemeDOM() {
   const root = document.documentElement;
@@ -728,20 +889,47 @@ function initChatflowThemeEvents() {
   const submitRegisterBtn = document.getElementById('submitRegisterBtn');
   const regErrorMsg = document.getElementById('regErrorMsg');
 
-  // 内置允许的通行邀请码列表 (可配置扩充)
-  const VALID_INVITE_CODES = ['JELLY2026', 'JELLY-VIP', 'SHUIMU888', 'PRO-8888', 'PRO-CREATOR'];
-
-  // 用户数据初始化 (持久化在 localStorage)
-  function getStoredUsers() {
-    try {
-      return JSON.parse(localStorage.getItem('hub_users') || '[]');
-    } catch {
-      return [];
-    }
+  // 账号统一由 auth-hub 管（水母 / 拼豆 / 作品集共用一套账号）。
+  // 这里只留一个令牌，绝不再本地存用户表或密码：localStorage 每个浏览器各存一份，
+  // 既做不到「用户名唯一」，明文密码也等于摊在桌面上（开控制台就能看全）。
+  function initDetailFavButton() {
+    const title = document.getElementById('detailNavTitle');
+    if (!title || document.getElementById('detailFavBtn')) return;
+    const btn = document.createElement('button');
+    btn.id = 'detailFavBtn';
+    btn.className = 'detail-fav-btn';
+    btn.textContent = '☆ 收藏';
+    btn.addEventListener('click', () => {
+      if (currentDetailId) toggleFavorite(currentDetailId);
+    });
+    title.parentNode.appendChild(btn);
   }
 
-  function saveStoredUsers(users) {
-    localStorage.setItem('hub_users', JSON.stringify(users));
+  // 刷新页面后凭令牌恢复登录，不用重新登
+  async function restoreSession() {
+    if (!getToken()) {
+      favoriteIds = new Set(getGuestFavorites());
+      renderFavorites();
+      return;
+    }
+    try {
+      const me = await authCall('GET', '/auth/me');
+      localStorage.setItem('hub_current_user', JSON.stringify({
+        username: me.user.username,
+        email: me.user.email,
+        role: roleFromBackend(me.user.role)
+      }));
+      await loadFavorites();
+    } catch {
+      // 令牌过期或被作废了，当没登录处理，别把用户卡在一个假登录态里
+      setToken('');
+      localStorage.removeItem('hub_current_user');
+      favoriteIds = new Set(getGuestFavorites());
+      renderFavorites();
+    }
+    renderAuthUI();
+    renderCards();
+    renderFavorites();
   }
 
   function getCurrentUser() {
@@ -752,7 +940,8 @@ function initChatflowThemeEvents() {
     }
   }
 
-  function setCurrentUser(user) {
+  function setCurrentUser(user, token) {
+    if (token !== undefined) setToken(token);
     if (user) {
       localStorage.setItem('hub_current_user', JSON.stringify(user));
     } else {
@@ -820,13 +1009,11 @@ function initChatflowThemeEvents() {
     });
   }
 
-  // 发送邮箱验证码逻辑 (支持真实发送与倒计时防刷)
+  // 发送邮箱验证码（真发还是落本地文件由 auth-hub 决定，前端不再自己生成码）
   let verifyCodeTimer = null;
-  let currentActiveVerifyCode = null; // 当前内存活跃的验证码
-  let currentVerifyEmail = null;
-  window._getActiveVerifyCode = () => currentActiveVerifyCode;
 
   if (sendCodeBtn) {
+    const sendBtnIdleText = sendCodeBtn.innerText;
     sendCodeBtn.addEventListener('click', async () => {
       const email = (regEmailInput.value || '').trim();
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -838,41 +1025,24 @@ function initChatflowThemeEvents() {
         return;
       }
 
-      // 查重：邮箱是否已被注册
-      const users = getStoredUsers();
-      if (users.find(u => (u.email || '').toLowerCase() === email.toLowerCase())) {
-        regErrorMsg.innerText = '该邮箱已注册过账号，请直接登录';
-        regErrorMsg.classList.remove('hidden');
-        return;
-      }
-
       regErrorMsg.classList.add('hidden');
       sendCodeBtn.disabled = true;
       sendCodeBtn.innerText = '发送中...';
 
-      // 生成 6 位随机安全验证码
-      const code = Math.floor(100000 + Math.random() * 900000).toString();
-      currentActiveVerifyCode = code;
-      currentVerifyEmail = email;
-
       try {
-        // 调用本地后端的邮件服务接口
-        const resp = await fetch('/api/send-email-code', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, code })
-        });
-        const result = await resp.json().catch(() => ({ ok: true }));
-        
-        if (result.mode === 'simulated') {
-          showToast(`📩 演示模式：验证码已生成 [ ${code} ] (真实发信已同步触发)`);
+        const data = await authCall('POST', '/auth/verify/send', { email });
+        if (data.dev_code) {
+          // 只在 auth-hub 没配 SMTP 时才会拿到这个，方便本地自测
+          showToast(`📩 演示模式：验证码 ${data.dev_code}（真正上线会发到邮箱里）`);
         } else {
           showToast(`📩 验证码已发送至 ${email}，请查收！`);
         }
       } catch (err) {
-        // 网络或未配置 SMTP 时无缝优雅降级演示
-        console.warn('Email dispatch simulated fallback:', err);
-        showToast(`📩 验证码已生成：【 ${code} 】（5分钟有效）`);
+        regErrorMsg.innerText = err.message || '验证码发送失败，请稍后再试';
+        regErrorMsg.classList.remove('hidden');
+        sendCodeBtn.disabled = false;
+        sendCodeBtn.innerText = sendBtnIdleText;
+        return;
       }
 
       // 启动 60 秒倒计时
@@ -885,7 +1055,7 @@ function initChatflowThemeEvents() {
           clearInterval(verifyCodeTimer);
           verifyCodeTimer = null;
           sendCodeBtn.disabled = false;
-          sendCodeBtn.innerText = '获取验证码';
+          sendCodeBtn.innerText = sendBtnIdleText;
         } else {
           sendCodeBtn.innerText = `${countdown}s 后重发`;
         }
@@ -893,143 +1063,123 @@ function initChatflowThemeEvents() {
     });
   }
 
-  // 注册提交
+  // 注册提交（用户名是否被占用由后端说了算，前端不再自己查）
   if (submitRegisterBtn) {
-    submitRegisterBtn.addEventListener('click', () => {
+    const regBtnIdleText = submitRegisterBtn.innerText;
+    submitRegisterBtn.addEventListener('click', async () => {
       const username = (regUsernameInput.value || '').trim();
       const email = (regEmailInput.value || '').trim();
       const verifyCode = (regVerifyCodeInput.value || '').trim();
       const password = (regPasswordInput.value || '').trim();
-      const inviteCode = (regInviteCodeInput.value || '').trim().toUpperCase();
+      const inviteCode = (regInviteCodeInput.value || '').trim();
 
-      if (!username || !email || !verifyCode || !password) {
-        regErrorMsg.innerText = '请完整填写所有必填注册信息';
+      if (!username || !password) {
+        regErrorMsg.innerText = '请填写用户名和密码';
         regErrorMsg.classList.remove('hidden');
         return;
       }
-
-      if (username.length < 2) {
-        regErrorMsg.innerText = '创作者昵称至少需要 2 个字符';
+      if (!email) {
+        regErrorMsg.innerText = '请填写邮箱';
         regErrorMsg.classList.remove('hidden');
         return;
       }
-
-      // 邮箱格式校验
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        regErrorMsg.innerText = '电子邮箱格式不正确';
+      if (!verifyCode) {
+        regErrorMsg.innerText = '请填写邮箱验证码（点「获取验证码」发到邮箱）';
         regErrorMsg.classList.remove('hidden');
         return;
       }
-
-      // 验证码比对 (必须匹配发送时的邮箱与验证码)
-      if (email.toLowerCase() !== (currentVerifyEmail || '').toLowerCase()) {
-        regErrorMsg.innerText = '当前邮箱与接收验证码的邮箱不一致';
-        regErrorMsg.classList.remove('hidden');
-        return;
-      }
-
-      if (!currentActiveVerifyCode || verifyCode !== currentActiveVerifyCode) {
-        regErrorMsg.innerText = '邮箱验证码错误或已失效，请重新获取';
-        regErrorMsg.classList.remove('hidden');
-        return;
-      }
-
-      // 密码长度
-      if (password.length < 6) {
-        regErrorMsg.innerText = '设置密码至少需要 6 个字符';
-        regErrorMsg.classList.remove('hidden');
-        return;
-      }
-
-      // 邀请码校验
-      if (!inviteCode || !VALID_INVITE_CODES.includes(inviteCode)) {
-        regErrorMsg.innerText = '邀请码无效！请在公众号回复【水母】获取通行密令';
-        regErrorMsg.classList.remove('hidden');
-        return;
-      }
-
-      const users = getStoredUsers();
-      if (users.find(u => u.username.toLowerCase() === username.toLowerCase())) {
-        regErrorMsg.innerText = '该创作者昵称已被占用，换一个更有灵感的吧';
-        regErrorMsg.classList.remove('hidden');
-        return;
-      }
-
-      // 决定角色
-      let role = 'normal';
-      if (inviteCode === 'PRO-8888' || inviteCode === 'PRO-CREATOR') {
-        role = 'pro';
-      } else if (username.toLowerCase() === 'admin' || username.toLowerCase() === 'karven') {
-        role = 'admin';
-      }
-
-      const newUser = {
-        username,
-        email,
-        password,
-        role,
-        inviteCode,
-        createdAt: new Date().toISOString()
-      };
-
-      users.push(newUser);
-      saveStoredUsers(users);
-      setCurrentUser(newUser);
 
       regErrorMsg.classList.add('hidden');
-      authModalOverlay.classList.remove('active');
-      showToast(`🎉 欢迎来到深海，创作者 ${username}！已成为${role === 'pro' ? '👑 PRO' : '认证'}创作者`);
+      submitRegisterBtn.disabled = true;
+      submitRegisterBtn.innerText = '注册中...';
+
+      try {
+        const data = await authCall('POST', '/auth/register', {
+          username,
+          password,
+          email,
+          code: verifyCode,
+          invite_code: inviteCode
+        });
+        setCurrentUser({
+          username: data.user.username,
+          email: data.user.email,
+          role: roleFromBackend(data.user.role)
+        }, data.token);
+        authModalOverlay.classList.remove('active');
+        showToast(`🎉 欢迎来到深海，创作者 ${data.user.username}！`);
+        await loadFavorites();
+      } catch (err) {
+        // 后端返回的原话（如「该用户名已被注册，换一个吧」）直接显示，
+        // 前端不再自己维护一份用户名名单
+        regErrorMsg.innerText = err.message || '注册失败，请稍后再试';
+        regErrorMsg.classList.remove('hidden');
+      } finally {
+        submitRegisterBtn.disabled = false;
+        submitRegisterBtn.innerText = regBtnIdleText;
+      }
     });
   }
 
-  // 登录提交
+  // 登录提交（用户名或邮箱都能登，口令校验在后端，前端不存任何口令）
   if (submitLoginBtn) {
-    submitLoginBtn.addEventListener('click', () => {
-      const username = (loginUsernameInput.value || '').trim();
+    const loginBtnIdleText = submitLoginBtn.innerText;
+    submitLoginBtn.addEventListener('click', async () => {
+      const identity = (loginUsernameInput.value || '').trim();
       const password = (loginPasswordInput.value || '').trim();
 
-      if (!username || !password) {
+      if (!identity || !password) {
         loginErrorMsg.innerText = '请输入账号和密码';
         loginErrorMsg.classList.remove('hidden');
         return;
       }
 
-      const users = getStoredUsers();
-      // 内置一个初始体验账号供未注册时无缝体验
-      if (username === 'admin' && password === '123456') {
-        const adminUser = { username: '站长水母', role: 'admin' };
-        setCurrentUser(adminUser);
-        loginErrorMsg.classList.add('hidden');
-        authModalOverlay.classList.remove('active');
-        showToast('👑 站长管理员身份已激活！');
-        return;
-      }
-
-      const matched = users.find(u => (u.username.toLowerCase() === username.toLowerCase() || (u.email && u.email.toLowerCase() === username.toLowerCase())) && u.password === password);
-      if (!matched) {
-        loginErrorMsg.innerText = '账号或密码不正确，若未注册请切换到注册页面';
-        loginErrorMsg.classList.remove('hidden');
-        return;
-      }
-
-      setCurrentUser(matched);
       loginErrorMsg.classList.add('hidden');
-      authModalOverlay.classList.remove('active');
-      showToast(`✨ 欢迎回来，${matched.username}！`);
+      submitLoginBtn.disabled = true;
+      submitLoginBtn.innerText = '登录中...';
+
+      try {
+        const data = await authCall('POST', '/auth/login', { identity, password });
+        setCurrentUser({
+          username: data.user.username,
+          email: data.user.email,
+          role: roleFromBackend(data.user.role)
+        }, data.token);
+        authModalOverlay.classList.remove('active');
+        showToast(`✨ 欢迎回来，${data.user.username}！`);
+        await loadFavorites();
+      } catch (err) {
+        loginErrorMsg.innerText = err.message || '登录失败，请稍后再试';
+        loginErrorMsg.classList.remove('hidden');
+      } finally {
+        submitLoginBtn.disabled = false;
+        submitLoginBtn.innerText = loginBtnIdleText;
+      }
     });
   }
 
-  // 退出登录
+  // 退出登录（通知后端作废令牌，换台设备也登不进去）
   if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
+    logoutBtn.addEventListener('click', async () => {
+      if (getToken()) {
+        try {
+          await authCall('POST', '/auth/logout');
+        } catch {
+          /* 后端已经不可达也要把本地状态清干净 */
+        }
+      }
+      setToken('');
       setCurrentUser(null);
+      favoriteIds = new Set(getGuestFavorites());
+      renderFavorites();
       showToast('已退出登录状态');
     });
   }
 
   // 初始化认证状态
   renderAuthUI();
+  initDetailFavButton();
+  restoreSession();
 
   // 模式切换按钮
   ['light', 'dark', 'system'].forEach(m => {
@@ -1096,5 +1246,6 @@ function initChatflowThemeEvents() {
     });
   }
 
-  // 初始应用  applyChatflowThemeDOM();
+  // 首屏就应用主题（之前被注释掉，导致 data-theme/data-mode 从未设置，所有人都吃深色兜底）
+  applyChatflowThemeDOM();
 }

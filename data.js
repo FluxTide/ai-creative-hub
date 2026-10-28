@@ -368,5 +368,32 @@ const CREATIVE_WORKS = [
     ],
     "toolUrl": "https://claude.ai/artifact/AX1qpMoR4a8EPXnkX282qK",
     "assetUrl": null
+  },
+  {
+    "id": "AI-VID-015",
+    "title": "脑洞大开",
+    "category": "video",
+    "categoryName": "赛博小玩具",
+    "cover": "assets/2107726966304690416.jpg",
+    "video": null,
+    "desc": "使用晾衣绳隐喻设计的桌面截图悬挂交互概念演示，包含菜单栏隐形晾衣绳布局、连续截图木夹自动挂载、惯性微晃物理垂坠感动效与随取随用文件交互。",
+    "tools": [],
+    "tags": ["3D互动", "UI设计"],
+    "recommend": "普通",
+    "promptEn": null,
+    "promptZh": null,
+    "negativePrompt": null,
+    "links": [
+      {
+        "name": "体验地址",
+        "url": "https://tendedero.app"
+      },
+      {
+        "name": "体验地址",
+        "url": "https://www.macg.co/logiciels/2026/10/avec-tendedero-les-captures-decran-du-mac-sechent-sur-une-corde-linge-311501"
+      }
+    ],
+    "toolUrl": "https://tendedero.app",
+    "assetUrl": null
   }
 ];
